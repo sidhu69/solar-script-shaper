@@ -87,70 +87,70 @@ function generateInterpretations(planets: any, ascendant: string) {
   
   // Personality interpretations based on Sun and Moon
   const personalityInsights: { [key: string]: string } = {
-    "Aries": "You possess a fiery spirit and natural leadership qualities. Your pioneering nature drives you to take initiative and blaze new trails. However, learning patience and considering others' perspectives will enhance your journey.",
-    "Taurus": "Grounded and reliable, you value stability and material comfort. Your determination is unmatched, and you have an appreciation for beauty and sensory pleasures. Guard against stubbornness and embrace flexibility.",
-    "Gemini": "Your intellectual curiosity and adaptability make you a natural communicator. You thrive on variety and mental stimulation. Focus on depth alongside breadth, and cultivate consistency in your pursuits.",
-    "Cancer": "Deeply intuitive and nurturing, you possess strong emotional intelligence. Your connection to home and family grounds you. Learn to balance caring for others with self-care and emotional boundaries.",
-    "Leo": "Confident and charismatic, you naturally command attention and inspire others. Your creative spirit and generous heart are your gifts. Cultivate humility and share the spotlight to reach your highest potential.",
-    "Virgo": "Your analytical mind and attention to detail make you invaluable in any endeavor. Service-oriented and practical, you seek perfection. Remember to embrace imperfection and practice self-compassion.",
-    "Libra": "Harmonious and diplomatic, you excel at creating balance and beauty in your environment. Your sense of justice and fairness guides you. Work on making decisions independently and asserting your needs.",
-    "Scorpio": "Intense and transformative, you possess deep emotional and psychological insight. Your passion and determination are profound. Channel your power constructively and practice forgiveness.",
-    "Sagittarius": "Optimistic and philosophical, you're a natural seeker of truth and wisdom. Your love of freedom and adventure defines you. Ground your visions in practical action and cultivate patience.",
-    "Capricorn": "Ambitious and disciplined, you build lasting structures through persistent effort. Your sense of responsibility is admirable. Balance achievement with enjoyment and emotional expression.",
-    "Aquarius": "Innovative and humanitarian, you envision a better future for all. Your independent thinking sets you apart. Remember to honor emotional connections alongside intellectual pursuits.",
-    "Pisces": "Compassionate and spiritually attuned, you possess artistic and intuitive gifts. Your empathy is boundless. Establish healthy boundaries and ground your dreams in reality."
+    "Aries": "You're a natural-born leader with tons of energy and drive. You love being first and starting new things. Just remember to slow down sometimes and hear what others have to say - it'll make you even stronger.",
+    "Taurus": "You're super grounded and reliable. You love the good things in life and work hard for stability. Your determination is amazing, but try not to be too stubborn when change comes knocking.",
+    "Gemini": "Your mind is always buzzing with ideas! You're a great communicator and love learning new things. Try to go deep with some interests instead of always jumping to the next thing - you'll be surprised what you discover.",
+    "Cancer": "You feel things deeply and have incredible intuition. Home and family mean the world to you. Just make sure you're taking care of yourself too, not just everyone else.",
+    "Leo": "You light up any room you walk into! Your confidence and creativity are magnetic. Share that spotlight sometimes - your generosity makes you shine even brighter.",
+    "Virgo": "You notice everything and have an amazing eye for detail. You're practical and love helping others. Remember that nobody's perfect (not even you!) - be kind to yourself.",
+    "Libra": "You're all about balance and harmony. You make everything around you beautiful and fair. Work on trusting your gut when making decisions - you don't always need everyone's approval.",
+    "Scorpio": "You're intense in the best way - passionate, deep, and incredibly perceptive. You see what others miss. Use that power for good and try to let go of grudges.",
+    "Sagittarius": "You're the eternal optimist and adventurer! You love exploring ideas and places. Turn some of those big dreams into real plans - you've got what it takes.",
+    "Capricorn": "You're ambitious and get stuff done. Your discipline and responsibility are impressive. Don't forget to have fun along the way - life's not just about reaching the top.",
+    "Aquarius": "You're a visionary who thinks differently. You care about making the world better. Balance all that big thinking with real emotional connections - they matter too.",
+    "Pisces": "You're deeply compassionate and creative. Your intuition and empathy are gifts. Set some boundaries so you don't get overwhelmed by everyone else's feelings."
   };
 
   // Relationship interpretations based on Venus and 7th house
   const relationshipInsights: { [key: string]: string } = {
-    "Aries": "In relationships, you bring passion and excitement. You value independence and direct communication. Your ideal partner matches your energy and gives you space to be yourself. Learn to balance your needs with compromise.",
-    "Taurus": "You seek stable, committed relationships built on trust and loyalty. Physical affection and quality time matter deeply to you. You're a devoted partner who values consistency. Be open to growth and change within relationships.",
-    "Gemini": "Mental connection is paramount in your relationships. You need a partner who stimulates your mind and shares your curiosity. Communication and variety keep your relationships fresh. Cultivate emotional depth alongside intellectual rapport.",
-    "Cancer": "You're deeply nurturing and seek emotional security in relationships. Creating a safe, loving home with your partner is essential. Your intuitive understanding of others' needs is a gift. Ensure your needs are also met and communicated.",
-    "Leo": "Romance and grand gestures characterize your approach to love. You're generous and loyal, seeking a partner who appreciates your warmth. You thrive when your partner celebrates your uniqueness. Practice vulnerability and receptivity.",
-    "Virgo": "You show love through practical acts of service and thoughtful gestures. You seek a partner who shares your values and life goals. Your attention to your partner's needs is remarkable. Remember that love includes accepting imperfections.",
-    "Libra": "Partnership is central to your identity. You're a natural romantic who values harmony and equality. Beauty and refinement in relationships matter to you. Develop independence alongside partnership and make clear decisions.",
-    "Scorpio": "You experience love intensely and seek profound emotional and physical connections. Loyalty and trust are non-negotiable. Your transformative approach to relationships runs deep. Balance intensity with lightness and trust gradually.",
-    "Sagittarius": "Freedom and growth are essential in your relationships. You seek a partner who's also an adventure companion and philosophical friend. Your optimism is infectious. Balance independence with commitment and emotional availability.",
-    "Capricorn": "You take relationships seriously and seek long-term commitment. You're reliable and supportive, offering stability to your partner. Traditional values may guide you. Allow yourself to be emotionally vulnerable and spontaneous.",
-    "Aquarius": "Friendship forms the foundation of your romantic relationships. You value independence and intellectual connection. Unconventional relationships may appeal to you. Balance detachment with emotional intimacy.",
-    "Pisces": "You're a romantic idealist who seeks soul-deep connections. Your empathy and compassion create beautiful relationships. You may idealize partners initially. Ground your love in reality and maintain healthy boundaries."
+    "Aries": "You bring fire and excitement to love! You need someone who can keep up with your energy and gives you space to be you. Direct communication is your style. Just remember that compromise isn't weakness.",
+    "Taurus": "You're in it for the long haul. Loyalty and physical affection mean everything to you. You love building a stable life with someone you trust. Stay open to change - relationships grow and evolve.",
+    "Gemini": "You need mental connection first! Your ideal partner keeps things interesting and talks about everything with you. Mix in some emotional depth with all that great conversation.",
+    "Cancer": "You're incredibly caring and need emotional security. Building a cozy home together is your dream. You're amazing at understanding what others need - just speak up about your own needs too.",
+    "Leo": "You're a romantic who loves grand gestures! You're generous and loyal, and you need someone who celebrates you. Let yourself be vulnerable - it's where real intimacy happens.",
+    "Virgo": "You show love through actions - the little things you do daily. You want someone who shares your values and goals. Love isn't perfect though, and that's okay. Let some things slide.",
+    "Libra": "Partnership is everything to you. You're a natural romantic who creates beautiful harmony. Work on being okay alone sometimes and make decisions from your gut.",
+    "Scorpio": "When you love, you love deep. Loyalty and trust are dealbreakers for you. Your intensity is powerful - just lighten up sometimes and build trust slowly.",
+    "Sagittarius": "You need freedom and growth in love. Your partner should be your adventure buddy and best friend. Balance that independence with being emotionally present.",
+    "Capricorn": "You take love seriously and want something that lasts. You're super reliable and stable. Let loose a little - be spontaneous and show your vulnerable side.",
+    "Aquarius": "Friendship is the base of your relationships. You value independence and deep conversations. Get comfortable with emotions, not just ideas.",
+    "Pisces": "You're a hopeless romantic who dreams of deep soul connections. Your empathy creates beautiful love. Keep one foot on the ground though - see people as they really are."
   };
 
   // Career interpretations based on 10th house, Mercury, Saturn, Jupiter
   const careerInsights: { [key: string]: string } = {
-    "Aries": "You excel in careers requiring leadership, initiative, and quick decision-making. Entrepreneurship, sports, military, or pioneering fields suit you. Your competitive nature drives success. Channel your energy into long-term goals.",
-    "Taurus": "Careers involving finance, real estate, agriculture, art, or luxury goods align with your talents. You build wealth through persistence and practical skills. Your reliability makes you valuable. Embrace calculated risks for growth.",
-    "Gemini": "Communication-based careers thrive under your influence: journalism, teaching, writing, sales, or media. Your versatility allows success in multiple fields. Focus helps you achieve mastery. Develop expertise alongside breadth.",
-    "Cancer": "Nurturing professions appeal to you: healthcare, hospitality, real estate, counseling, or education. Creating supportive environments is your strength. Your emotional intelligence is an asset. Set professional boundaries.",
-    "Leo": "Creative leadership roles suit you: entertainment, management, politics, or entrepreneurship. You shine in positions allowing self-expression and influence. Your confidence inspires others. Collaborate and delegate effectively.",
-    "Virgo": "Detail-oriented fields match your talents: healthcare, research, editing, analysis, or service industries. Your organizational skills are exceptional. You improve systems and processes. Recognize when perfection isn't necessary.",
-    "Libra": "Careers requiring diplomacy and aesthetics suit you: law, diplomacy, design, counseling, or arts. You create harmony in professional settings. Your fairness is valued. Make decisive moves when needed.",
-    "Scorpio": "You excel in investigative or transformative fields: psychology, research, surgery, finance, or detective work. Your intensity drives deep work. You uncover hidden truths. Balance intensity with self-care.",
-    "Sagittarius": "Education, travel, philosophy, publishing, or international business align with your nature. You inspire others with your vision and optimism. Your big-picture thinking is valuable. Attend to practical details.",
-    "Capricorn": "You're built for leadership and achievement in business, administration, architecture, or established institutions. Your discipline ensures success. You climb steadily to the top. Remember work-life balance.",
-    "Aquarius": "Innovation and humanitarian work call to you: technology, social reform, science, or group facilitation. Your progressive thinking creates change. You work well in teams with autonomy. Ground ideals in action.",
-    "Pisces": "Creative and healing professions resonate: arts, music, healing, spirituality, or charity work. Your imagination and compassion are gifts. You uplift others through your work. Establish structure and boundaries."
+    "Aries": "You're meant for leadership roles! Quick decisions, starting new projects, entrepreneurship - that's your zone. Your competitive edge drives success. Focus that energy on long-term wins.",
+    "Taurus": "Finance, real estate, art, luxury - these fields are perfect for you. You build wealth steadily and practically. People trust your reliability. Take some calculated risks to level up.",
+    "Gemini": "Anything communication-based is your jam - writing, teaching, sales, media. You can do multiple things well. Pick a few to master though - it'll pay off.",
+    "Cancer": "You shine in caring roles - healthcare, hospitality, counseling, education. You create safe spaces for others. Your emotional intelligence is a superpower at work. Set boundaries so you don't burn out.",
+    "Leo": "You're born for the spotlight! Creative fields, leadership, entertainment, management - anywhere you can express yourself and inspire others. Share the wins with your team.",
+    "Virgo": "Your attention to detail is unmatched. Healthcare, research, analysis, editing - you make everything better and more organized. Don't get stuck on making things perfect though.",
+    "Libra": "Law, design, diplomacy, counseling, arts - you excel where beauty and fairness matter. You bring people together professionally. Be more decisive when you need to be.",
+    "Scorpio": "You dig deep - psychology, research, finance, investigation. You see what others miss and transform things. Take breaks though - intensity is great but self-care matters.",
+    "Sagittarius": "Teaching, travel, publishing, international work - you inspire with your vision and optimism. You see the big picture clearly. Remember the small details count too.",
+    "Capricorn": "You're built for climbing the career ladder. Business, leadership, management - you get stuff done. You'll reach the top. Just don't forget to live outside of work.",
+    "Aquarius": "Tech, social change, innovation, science - you're ahead of your time. Your ideas change things. Turn those brilliant concepts into real projects.",
+    "Pisces": "Creative and healing work calls you - arts, music, counseling, spiritual work. Your imagination and compassion help others. Add some structure to your dreams."
   };
 
   // Health interpretations based on 1st, 6th house, Moon, Sun, Mars
   const healthInsights: { [key: string]: string } = {
-    "Aries": "Your vitality is generally strong, but you may be prone to headaches, stress-related issues, or injuries from rushing. Regular physical activity channels your energy positively. Practice patience and avoid overexertion. Mind-body practices like yoga balance your fiery nature.",
-    "Taurus": "Pay attention to throat, neck, and thyroid health. Your love of comfort might lead to weight management needs. Regular exercise and a balanced diet are essential. Stress manifests in physical tension. Prioritize rest and moderation.",
-    "Gemini": "Your nervous system is sensitive, requiring adequate rest and stress management. Respiratory health and hand-arm wellness need attention. Mental overstimulation can affect sleep. Practice mindfulness and maintain consistent routines.",
-    "Cancer": "Digestive health correlates with your emotional state. Nurture yourself as you nurture others. Water intake and dietary habits significantly impact wellbeing. Emotional processing prevents physical manifestation. Create a peaceful home environment.",
-    "Leo": "Heart health and spine strength are focus areas. Your vitality is robust when aligned with purpose. Cardiovascular exercise and creative expression maintain health. Pride might delay seeking help. Regular check-ups are wise.",
-    "Virgo": "Digestive sensitivity requires attention to diet and gut health. Anxiety can manifest physically. Your health consciousness is an asset, but avoid excessive worry. Relaxation practices and routine exercise support wellbeing. Trust your body's wisdom.",
-    "Libra": "Kidney and lower back health need attention. Balance in all things maintains health. Partnerships influence wellbeing. Sweet treats in moderation. Regular movement and hydration are key. Stress shows in physical symptoms.",
-    "Scorpio": "Reproductive and elimination systems require care. Your intense nature needs healthy outlets. Hidden health issues may arise, so regular screening is important. Transformative healing practices resonate. Release emotional toxins through expression.",
-    "Sagittarius": "Hip, thigh, and liver health are considerations. Your optimism supports healing. Outdoor activities boost vitality. Overindulgence in food or drink requires moderation. Adventure fuels your spirit. Stay physically active.",
-    "Capricorn": "Bone, teeth, and joint health strengthen with proper care. Stress may manifest in skeletal system. Your disciplined approach supports long-term health. Don't ignore rest needs. Aging gracefully requires balance between work and wellness.",
-    "Aquarius": "Circulation, ankles, and nervous system need attention. Your unique constitution might require alternative health approaches. Group activities support wellbeing. Stress affects you mentally first. Innovation in health practices appeals to you.",
-    "Pisces": "Foot health and immune system require nurturing. Your sensitivity extends to substances and environments. Water-based activities heal. Emotional boundaries protect wellbeing. Spiritual practices support health. Trust your intuitive knowing about your body."
+    "Aries": "You've got strong energy, but watch out for headaches and rushing into injuries. Move that body regularly! Try yoga or meditation to balance your fire. Don't push yourself to exhaustion.",
+    "Taurus": "Keep an eye on your throat, neck, and thyroid. You love comfort, which is great, but stay active and eat well. Stress sits in your body, so stretch and rest regularly.",
+    "Gemini": "Your mind never stops, which can stress your nervous system. Watch your breathing and arms/hands. Get enough sleep - your brain needs it. Try mindfulness to calm that busy mind.",
+    "Cancer": "Your stomach and emotions are connected. When you're stressed, your digestion shows it. Take care of yourself like you take care of others. Drink water and create a peaceful home.",
+    "Leo": "Focus on your heart and spine. When you're doing what you love, you're healthiest. Get that cardio in and express yourself creatively. Don't let pride stop you from seeing a doctor.",
+    "Virgo": "Your gut is sensitive, so watch what you eat. Anxiety can show up physically for you. You're health-conscious, which is good - just don't stress about it too much. Move daily and relax.",
+    "Libra": "Take care of your kidneys and lower back. Balance is key - in life and health. Stay hydrated and move regularly. Go easy on the sweets. Stress hits you physically.",
+    "Scorpio": "Pay attention to your reproductive health and digestion. Your intensity needs outlets - exercise, creativity, talk therapy. Get regular check-ups. Let go of emotional stuff before it affects your body.",
+    "Sagittarius": "Watch your hips, thighs, and liver. Your optimism helps you heal fast! Get outside and stay active. Just don't overdo it with food or drinks. Adventure keeps you healthy.",
+    "Capricorn": "Your bones, teeth, and joints need care. Stress can show up in your body. You're disciplined about goals - be that way with rest too. Work-life balance keeps you strong long-term.",
+    "Aquarius": "Look after your circulation, ankles, and nerves. Alternative health stuff might work well for you. Group fitness is fun for you. Stress hits your mind first. Try different wellness approaches.",
+    "Pisces": "Care for your feet and immune system. You're sensitive to everything around you. Swimming or water activities are healing. Set emotional boundaries. Trust what your body tells you."
   };
 
   return {
-    personality: `${personalityInsights[sunSign]}\n\nWith your Moon in ${moonSign}, ${personalityInsights[moonSign].toLowerCase().split('.')[0].replace('you', 'you emotionally')}, adding emotional depth to your Sun sign expression. Your ascendant in ${ascendant} colors how others first perceive you, creating the initial impression you make on the world.`,
+    personality: `${personalityInsights[sunSign]}\n\nYour Moon in ${moonSign} shows your emotional side. ${personalityInsights[moonSign]}\n\nPeople see you as ${ascendant} rising first - that's the vibe you give off when someone meets you.`,
     relationships: relationshipInsights[venusSign],
     career: careerInsights[sunSign],
     health: healthInsights[sunSign]
