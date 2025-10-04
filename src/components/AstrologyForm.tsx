@@ -3,7 +3,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
-import { Calendar, Clock, MapPin, Sparkles } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Calendar, Clock, MapPin, Sparkles, Languages } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -17,6 +24,7 @@ export const AstrologyForm = ({ onResults, onLoading }: AstrologyFormProps) => {
   const [birthTime, setBirthTime] = useState("");
   const [birthPlace, setBirthPlace] = useState("");
   const [systemType, setSystemType] = useState<"vedic" | "western">("vedic");
+  const [language, setLanguage] = useState("english");
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -40,6 +48,7 @@ export const AstrologyForm = ({ onResults, onLoading }: AstrologyFormProps) => {
           birthTime,
           birthPlace,
           systemType,
+          language,
         },
       });
 
@@ -134,6 +143,22 @@ export const AstrologyForm = ({ onResults, onLoading }: AstrologyFormProps) => {
             className="bg-input/50 border-border/50"
             required
           />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="language" className="text-lg flex items-center gap-2">
+            <Languages className="w-5 h-5 text-secondary" />
+            Language
+          </Label>
+          <Select value={language} onValueChange={setLanguage}>
+            <SelectTrigger id="language" className="bg-input/50 border-border/50">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="english">English</SelectItem>
+              <SelectItem value="hinglish">Hinglish</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         <Button

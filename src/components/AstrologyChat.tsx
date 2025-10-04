@@ -13,13 +13,16 @@ interface Message {
 
 interface AstrologyChatProps {
   birthChart: any;
+  language: string;
 }
 
-export const AstrologyChat = ({ birthChart }: AstrologyChatProps) => {
+export const AstrologyChat = ({ birthChart, language }: AstrologyChatProps) => {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
-      content: `Hey! 👋 I've got your birth chart here. Ask me anything about your life - relationships, career, health, family, future, whatever's on your mind. I'll give you insights based on your unique planetary positions.`
+      content: language === "hinglish" 
+        ? `Namaste! 👋 Aapka birth chart mere paas hai. Apni life ke baare mein kuch bhi poocho - relationships, career, health, family, future, jo bhi mann mein ho. Main aapke unique planetary positions ke basis par insights dunga.`
+        : `Hey! 👋 I've got your birth chart here. Ask me anything about your life - relationships, career, health, family, future, whatever's on your mind. I'll give you insights based on your unique planetary positions.`
     }
   ]);
   const [input, setInput] = useState("");
@@ -48,7 +51,8 @@ export const AstrologyChat = ({ birthChart }: AstrologyChatProps) => {
         },
         body: JSON.stringify({
           messages: newMessages,
-          birthChart: birthChart
+          birthChart: birthChart,
+          language: language
         }),
       });
 
@@ -171,7 +175,7 @@ export const AstrologyChat = ({ birthChart }: AstrologyChatProps) => {
           <Input
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Ask about love, career, health, or anything..."
+            placeholder={language === "hinglish" ? "Love, career, health ke baare mein poocho..." : "Ask about love, career, health, or anything..."}
             disabled={isLoading}
             className="flex-1 bg-background/60 border-primary/20"
           />

@@ -163,13 +163,14 @@ serve(async (req) => {
   }
 
   try {
-    const { birthDate, birthTime, birthPlace, systemType } = await req.json();
+    const { birthDate, birthTime, birthPlace, systemType, language } = await req.json();
 
     console.log("Processing astrology calculation:", {
       birthDate,
       birthTime,
       birthPlace,
-      systemType
+      systemType,
+      language
     });
 
     // Parse birth date
@@ -191,6 +192,7 @@ serve(async (req) => {
       ascendant,
       planets,
       interpretations,
+      language: language || "english",
       birthDetails: {
         date: birthDate,
         time: birthTime,

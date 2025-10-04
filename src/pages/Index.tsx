@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { AstrologyForm } from "@/components/AstrologyForm";
-import { AstrologyReport } from "@/components/AstrologyReport";
 import { AstrologyChat } from "@/components/AstrologyChat";
-import { Sparkles, Stars } from "lucide-react";
+import { BirthChartView } from "@/components/BirthChartView";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Sparkles, Stars, MessageCircle, LineChart } from "lucide-react";
 
 const Index = () => {
   const [reportData, setReportData] = useState(null);
@@ -68,11 +69,27 @@ const Index = () => {
           </div>
         )}
 
-        {/* Report & Chat Section */}
+        {/* Chat & Chart Tabs */}
         {!isLoading && reportData && (
-          <div className="max-w-6xl mx-auto space-y-12">
-            <AstrologyReport data={reportData} />
-            <AstrologyChat birthChart={reportData} />
+          <div className="max-w-6xl mx-auto">
+            <Tabs defaultValue="chat" className="w-full">
+              <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mb-8">
+                <TabsTrigger value="chat" className="flex items-center gap-2">
+                  <MessageCircle className="w-4 h-4" />
+                  Chat
+                </TabsTrigger>
+                <TabsTrigger value="chart" className="flex items-center gap-2">
+                  <LineChart className="w-4 h-4" />
+                  Chart
+                </TabsTrigger>
+              </TabsList>
+              <TabsContent value="chat">
+                <AstrologyChat birthChart={reportData} language={reportData.language || "english"} />
+              </TabsContent>
+              <TabsContent value="chart">
+                <BirthChartView data={reportData} />
+              </TabsContent>
+            </Tabs>
           </div>
         )}
       </div>
