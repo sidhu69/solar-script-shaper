@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { AstrologyForm } from "@/components/AstrologyForm";
 import { AstrologyReport } from "@/components/AstrologyReport";
+import { AstrologyChat } from "@/components/AstrologyChat";
 import { Sparkles, Stars } from "lucide-react";
 
 const Index = () => {
@@ -48,10 +49,12 @@ const Index = () => {
           </div>
         </div>
 
-        {/* Form Section */}
-        <div className="max-w-2xl mx-auto mb-16">
-          <AstrologyForm onResults={setReportData} onLoading={setIsLoading} />
-        </div>
+        {/* Form Section - Only show if no report */}
+        {!reportData && (
+          <div className="max-w-2xl mx-auto mb-16">
+            <AstrologyForm onResults={setReportData} onLoading={setIsLoading} />
+          </div>
+        )}
 
         {/* Loading State */}
         {isLoading && (
@@ -65,10 +68,11 @@ const Index = () => {
           </div>
         )}
 
-        {/* Report Section */}
+        {/* Report & Chat Section */}
         {!isLoading && reportData && (
-          <div className="max-w-6xl mx-auto">
+          <div className="max-w-6xl mx-auto space-y-12">
             <AstrologyReport data={reportData} />
+            <AstrologyChat birthChart={reportData} />
           </div>
         )}
       </div>
