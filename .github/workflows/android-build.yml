@@ -1,0 +1,76 @@
+name: Build Android APK
+run-name: Building Celestial Oracle Android App 🚀
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:  # Allows manual trigger
+
+jobs:
+  build:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+    
+    steps:
+      # 1. Checkout repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. Setup Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      # 3. Setup Java (required for Android)
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      # 4. Install dependencies
+      - name: Install dependencies
+        run: npm ci
+
+      # 5. Install Capacitor if not in package.json yet
+      - name: Install Capacitor
+        run: |
+          npm install @capacitor/core@latest
+          npm install @capacitor/cli@latest
+          npm install @capacitor/android@latest
+
+      # 6. Build Vite app
+      - name: Build Vite app
+        run: npm run build
+
+      # 7. Initialize Capacitor (first time only)
+      - name: Initialize Capacitor
+        run: |
+          npx cap init "Celestial Oracle" "com.celestial.oracle" --web-dir=dist || echo "Already initialized"
+
+      # 8. Add Android platform
+      - name: Add Android platform
+        run: npx cap add android || echo "Android already added"
+
+      # 9. Sync Capacitor
+      - name: Sync Capacitor
+        run: npx cap sync android
+
+      # 10. Make gradlew executable
+      - name: Make gradlew executable
+        run: chmod +x android/gradlew
+
+      # 11. Build debug APK
+      - name: Build debug APK
+        run: cd android && ./gradlew assembleDebug --stacktrace
+
+      # 12. Upload APK as artifact
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: celestial-oracle-debug-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 14
