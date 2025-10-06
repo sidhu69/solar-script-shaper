@@ -41,9 +41,9 @@ const AstrologyView = () => {
           <TabsContent value="chat" className="flex-1 m-0">
             <AstrologyChat birthChart={reportData} language={reportData.language || "english"} />
           </TabsContent>
-          <TabsContent value="chart" className="flex-1 m-0 overflow-auto">
+              <TabsContent value="chart" className="flex-1 m-0 overflow-auto">
             <div className="container mx-auto px-4 py-8">
-              <BirthChartView data={reportData} />
+              <BirthChartView data={reportData} language={reportData.language} />
             </div>
           </TabsContent>
         </Tabs>
