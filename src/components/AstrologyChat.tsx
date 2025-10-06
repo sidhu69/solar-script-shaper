@@ -20,7 +20,7 @@ export const AstrologyChat = ({ birthChart, language }: AstrologyChatProps) => {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
-      content: language === "hinglish" 
+      content: language === "hinglish"
         ? `Namaste! 👋 Aapka birth chart mere paas hai. Apni life ke baare mein kuch bhi poocho - relationships, career, health, family, future, jo bhi mann mein ho. Main aapke unique planetary positions ke basis par insights dunga.`
         : `Hey! 👋 I've got your birth chart here. Ask me anything about your life - relationships, career, health, family, future, whatever's on your mind. I'll give you insights based on your unique planetary positions.`
     }
@@ -81,7 +81,7 @@ export const AstrologyChat = ({ birthChart, language }: AstrologyChatProps) => {
       while (!streamDone) {
         const { done, value } = await reader.read();
         if (done) break;
-        
+
         textBuffer += decoder.decode(value, { stream: true });
 
         let newlineIndex: number;
@@ -107,7 +107,7 @@ export const AstrologyChat = ({ birthChart, language }: AstrologyChatProps) => {
               setMessages(prev => {
                 const lastMsg = prev[prev.length - 1];
                 if (lastMsg?.role === "assistant") {
-                  return prev.map((m, i) => 
+                  return prev.map((m, i) =>
                     i === prev.length - 1 ? { ...m, content: assistantContent } : m
                   );
                 }
@@ -136,9 +136,9 @@ export const AstrologyChat = ({ birthChart, language }: AstrologyChatProps) => {
   };
 
   return (
-    <div className="h-full flex flex-col bg-background">
+    <div className="h-full flex flex-col bg-background overflow-hidden">
       {/* Header with Pro AI branding */}
-      <div className="border-b bg-background/80 backdrop-blur-md p-4">
+      <div className="border-b bg-background/80 backdrop-blur-md p-4 flex-shrink-0">
         <div className="container mx-auto flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-gradient-to-r from-primary to-accent flex items-center justify-center">
             <Sparkles className="w-5 h-5 text-white" />
@@ -153,11 +153,13 @@ export const AstrologyChat = ({ birthChart, language }: AstrologyChatProps) => {
         </div>
       </div>
 
-      {/* Chat Area */}
-      <div className="flex-1 container mx-auto px-4 flex flex-col max-w-4xl">
-        
-        <ScrollArea ref={scrollRef} className="flex-1 pr-4 my-4">
-          <div className="space-y-4">
+      {/* Chat Messages Area - Fixed height with flex-1 */}
+      <div className="flex-1 overflow-hidden">
+        <div 
+          ref={scrollRef}
+          className="h-full overflow-y-auto px-4 py-4"
+        >
+          <div className="container mx-auto max-w-4xl space-y-4 pb-4">
             {messages.map((message, index) => (
               <div
                 key={index}
@@ -182,28 +184,32 @@ export const AstrologyChat = ({ birthChart, language }: AstrologyChatProps) => {
               </div>
             )}
           </div>
-        </ScrollArea>
+        </div>
+      </div>
 
-        <form onSubmit={handleSubmit} className="flex gap-2">
-          <Input
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder={language === "hinglish" ? "Love, career, health ke baare mein poocho..." : "Ask about love, career, health, or anything..."}
-            disabled={isLoading}
-            className="flex-1 bg-background/60 border-primary/20"
-          />
-          <Button type="submit" disabled={isLoading || !input.trim()}>
-            {isLoading ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <Send className="w-4 h-4" />
-            )}
-          </Button>
-        </form>
-
-        <p className="text-xs text-muted-foreground mt-2 text-center">
-          Powered by advanced astrological AI • All answers based on your birth chart
-        </p>
+      {/* Input Area - Fixed at bottom */}
+      <div className="flex-shrink-0 border-t bg-background p-4">
+        <div className="container mx-auto max-w-4xl">
+          <form onSubmit={handleSubmit} className="flex gap-2 mb-2">
+            <Input
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder={language === "hinglish" ? "Love, career, health ke baare mein poocho..." : "Ask about love, career, health, or anything..."}
+              disabled={isLoading}
+              className="flex-1 bg-background/60 border-primary/20"
+            />
+            <Button type="submit" disabled={isLoading || !input.trim()} size="icon">
+              {isLoading ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Send className="w-4 h-4" />
+              )}
+            </Button>
+          </form>
+          <p className="text-xs text-muted-foreground text-center">
+            Powered by advanced astrological AI • All answers based on your birth chart
+          </p>
+        </div>
       </div>
     </div>
   );
