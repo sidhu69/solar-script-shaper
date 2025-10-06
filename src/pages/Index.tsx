@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { AstrologyForm } from "@/components/AstrologyForm";
+import { Watermark } from "@/components/Watermark";
 import { Sparkles, Stars } from "lucide-react";
 
 const Index = () => {
@@ -7,6 +8,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen relative overflow-hidden">
+      <Watermark />
       {/* Starfield background */}
       <div className="fixed inset-0 star-field opacity-40 pointer-events-none" />
       

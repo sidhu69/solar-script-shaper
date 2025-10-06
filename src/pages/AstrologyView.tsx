@@ -2,6 +2,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { AstrologyChat } from "@/components/AstrologyChat";
 import { BirthChartView } from "@/components/BirthChartView";
+import { Watermark } from "@/components/Watermark";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MessageCircle, LineChart } from "lucide-react";
 
@@ -22,6 +23,7 @@ const AstrologyView = () => {
 
   return (
     <div className="min-h-screen relative overflow-hidden">
+      <Watermark />
       {/* Starfield background */}
       <div className="fixed inset-0 star-field opacity-40 pointer-events-none" />
       
