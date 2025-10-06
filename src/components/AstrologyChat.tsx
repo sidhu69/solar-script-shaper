@@ -1,8 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Loader2, Send, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 
@@ -28,6 +26,7 @@ export const AstrologyChat = ({ birthChart, language }: AstrologyChatProps) => {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/astrology-chat`;
 
   useEffect(() => {
@@ -136,10 +135,10 @@ export const AstrologyChat = ({ birthChart, language }: AstrologyChatProps) => {
   };
 
   return (
-    <div className="h-full flex flex-col bg-background overflow-hidden">
+    <div className="h-full w-full flex flex-col bg-background">
       {/* Header with Pro AI branding */}
       <div className="border-b bg-background/80 backdrop-blur-md p-4 flex-shrink-0">
-        <div className="container mx-auto flex items-center gap-3">
+        <div className="flex items-center gap-3 max-w-4xl mx-auto">
           <div className="w-10 h-10 rounded-full bg-gradient-to-r from-primary to-accent flex items-center justify-center">
             <Sparkles className="w-5 h-5 text-white" />
           </div>
@@ -153,13 +152,14 @@ export const AstrologyChat = ({ birthChart, language }: AstrologyChatProps) => {
         </div>
       </div>
 
-      {/* Chat Messages Area - Fixed height with flex-1 */}
+      {/* Chat Messages Area */}
       <div className="flex-1 overflow-hidden">
         <div 
           ref={scrollRef}
-          className="h-full overflow-y-auto px-4 py-4"
+          className="h-full overflow-y-auto overscroll-contain"
+          style={{ WebkitOverflowScrolling: 'touch' }}
         >
-          <div className="container mx-auto max-w-4xl space-y-4 pb-4">
+          <div className="max-w-4xl mx-auto px-4 py-4 space-y-4">
             {messages.map((message, index) => (
               <div
                 key={index}
@@ -172,7 +172,7 @@ export const AstrologyChat = ({ birthChart, language }: AstrologyChatProps) => {
                       : "bg-secondary/50 text-foreground"
                   }`}
                 >
-                  <p className="whitespace-pre-wrap">{message.content}</p>
+                  <p className="whitespace-pre-wrap break-words">{message.content}</p>
                 </div>
               </div>
             ))}
@@ -187,18 +187,25 @@ export const AstrologyChat = ({ birthChart, language }: AstrologyChatProps) => {
         </div>
       </div>
 
-      {/* Input Area - Fixed at bottom */}
-      <div className="flex-shrink-0 border-t bg-background p-4">
-        <div className="container mx-auto max-w-4xl">
+      {/* Input Area - Always visible at bottom */}
+      <div className="flex-shrink-0 border-t bg-background/95 backdrop-blur-md p-4 safe-area-inset-bottom">
+        <div className="max-w-4xl mx-auto">
           <form onSubmit={handleSubmit} className="flex gap-2 mb-2">
             <Input
+              ref={inputRef}
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder={language === "hinglish" ? "Love, career, health ke baare mein poocho..." : "Ask about love, career, health, or anything..."}
               disabled={isLoading}
-              className="flex-1 bg-background/60 border-primary/20"
+              className="flex-1 bg-background border-primary/20"
+              autoComplete="off"
             />
-            <Button type="submit" disabled={isLoading || !input.trim()} size="icon">
+            <Button 
+              type="submit" 
+              disabled={isLoading || !input.trim()} 
+              size="icon"
+              className="flex-shrink-0"
+            >
               {isLoading ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
               ) : (
@@ -207,7 +214,7 @@ export const AstrologyChat = ({ birthChart, language }: AstrologyChatProps) => {
             </Button>
           </form>
           <p className="text-xs text-muted-foreground text-center">
-            Powered by advanced astrological AI • All answers based on your birth chart
+            By Prothon
           </p>
         </div>
       </div>
