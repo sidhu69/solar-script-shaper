@@ -22,7 +22,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
 
       # 3. Setup Java (required for Android)
       - name: Setup Java
@@ -31,43 +30,36 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      # 4. Install dependencies
+      # 4. Install dependencies (changed from npm ci to npm install)
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
-      # 5. Install Capacitor if not in package.json yet
-      - name: Install Capacitor
-        run: |
-          npm install @capacitor/core@latest
-          npm install @capacitor/cli@latest
-          npm install @capacitor/android@latest
-
-      # 6. Build Vite app
+      # 5. Build Vite app
       - name: Build Vite app
         run: npm run build
 
-      # 7. Initialize Capacitor (first time only)
+      # 6. Initialize Capacitor (first time only)
       - name: Initialize Capacitor
         run: |
           npx cap init "Celestial Oracle" "com.celestial.oracle" --web-dir=dist || echo "Already initialized"
 
-      # 8. Add Android platform
+      # 7. Add Android platform
       - name: Add Android platform
         run: npx cap add android || echo "Android already added"
 
-      # 9. Sync Capacitor
+      # 8. Sync Capacitor
       - name: Sync Capacitor
         run: npx cap sync android
 
-      # 10. Make gradlew executable
+      # 9. Make gradlew executable
       - name: Make gradlew executable
         run: chmod +x android/gradlew
 
-      # 11. Build debug APK
+      # 10. Build debug APK
       - name: Build debug APK
         run: cd android && ./gradlew assembleDebug --stacktrace
 
-      # 12. Upload APK as artifact
+      # 11. Upload APK as artifact
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
