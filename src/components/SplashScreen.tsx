@@ -19,7 +19,7 @@ export const SplashScreen = ({ onComplete }: SplashScreenProps) => {
 
   return (
     <motion.div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-primary via-purple-900 to-background overflow-hidden"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-purple-900 via-purple-700 to-purple-950 overflow-hidden"
       initial={{ opacity: 1 }}
       animate={{ opacity: fadeOut ? 0 : 1 }}
       transition={{ duration: 1 }}
@@ -154,7 +154,7 @@ export const SplashScreen = ({ onComplete }: SplashScreenProps) => {
         }}
       >
         <motion.h1
-          className="text-6xl md:text-8xl font-bold text-white mb-4"
+          className="text-6xl md:text-8xl font-extrabold text-white mb-4"
           animate={{
             textShadow: [
               "0 0 20px rgba(255,255,255,0.5)",
@@ -170,7 +170,7 @@ export const SplashScreen = ({ onComplete }: SplashScreenProps) => {
           Built By
         </motion.h1>
         <motion.h2
-          className="text-7xl md:text-9xl font-bold text-gradient-cosmic"
+          className="text-7xl md:text-9xl font-extrabold text-gradient-cosmic"
           animate={{
             textShadow: [
               "0 0 30px rgba(139,92,246,0.5)",
