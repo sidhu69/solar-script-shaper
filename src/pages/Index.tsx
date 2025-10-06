@@ -1,12 +1,8 @@
 import { useState } from "react";
 import { AstrologyForm } from "@/components/AstrologyForm";
-import { AstrologyChat } from "@/components/AstrologyChat";
-import { BirthChartView } from "@/components/BirthChartView";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Sparkles, Stars, MessageCircle, LineChart } from "lucide-react";
+import { Sparkles, Stars } from "lucide-react";
 
 const Index = () => {
-  const [reportData, setReportData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
   return (
@@ -50,12 +46,10 @@ const Index = () => {
           </div>
         </div>
 
-        {/* Form Section - Only show if no report */}
-        {!reportData && (
-          <div className="max-w-2xl mx-auto mb-16">
-            <AstrologyForm onResults={setReportData} onLoading={setIsLoading} />
-          </div>
-        )}
+        {/* Form Section */}
+        <div className="max-w-2xl mx-auto mb-16">
+          <AstrologyForm onLoading={setIsLoading} />
+        </div>
 
         {/* Loading State */}
         {isLoading && (
@@ -66,30 +60,6 @@ const Index = () => {
             <p className="text-xl text-muted-foreground">
               Consulting the stars and calculating your cosmic blueprint...
             </p>
-          </div>
-        )}
-
-        {/* Chat & Chart Tabs */}
-        {!isLoading && reportData && (
-          <div className="max-w-6xl mx-auto">
-            <Tabs defaultValue="chat" className="w-full">
-              <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mb-8">
-                <TabsTrigger value="chat" className="flex items-center gap-2">
-                  <MessageCircle className="w-4 h-4" />
-                  Chat
-                </TabsTrigger>
-                <TabsTrigger value="chart" className="flex items-center gap-2">
-                  <LineChart className="w-4 h-4" />
-                  Chart
-                </TabsTrigger>
-              </TabsList>
-              <TabsContent value="chat">
-                <AstrologyChat birthChart={reportData} language={reportData.language || "english"} />
-              </TabsContent>
-              <TabsContent value="chart">
-                <BirthChartView data={reportData} />
-              </TabsContent>
-            </Tabs>
           </div>
         )}
       </div>

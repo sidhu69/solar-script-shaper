@@ -136,14 +136,27 @@ export const AstrologyChat = ({ birthChart, language }: AstrologyChatProps) => {
   };
 
   return (
-    <Card className="w-full max-w-4xl mx-auto bg-background/40 backdrop-blur-md border-primary/20">
-      <div className="p-6">
-        <div className="flex items-center gap-2 mb-4">
-          <Sparkles className="w-6 h-6 text-primary" />
-          <h2 className="text-2xl font-bold text-gradient">Ask Your Astrologer</h2>
+    <div className="h-full flex flex-col bg-background">
+      {/* Header with Pro AI branding */}
+      <div className="border-b bg-background/80 backdrop-blur-md p-4">
+        <div className="container mx-auto flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-gradient-to-r from-primary to-accent flex items-center justify-center">
+            <Sparkles className="w-5 h-5 text-white" />
+          </div>
+          <div className="flex-1">
+            <h2 className="text-lg font-bold text-gradient">Pro AI</h2>
+            <div className="flex items-center gap-2 text-sm">
+              <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+              <span className="text-muted-foreground">Online</span>
+            </div>
+          </div>
         </div>
+      </div>
+
+      {/* Chat Area */}
+      <div className="flex-1 container mx-auto px-4 flex flex-col max-w-4xl">
         
-        <ScrollArea ref={scrollRef} className="h-[500px] pr-4 mb-4">
+        <ScrollArea ref={scrollRef} className="flex-1 pr-4 my-4">
           <div className="space-y-4">
             {messages.map((message, index) => (
               <div
@@ -192,6 +205,6 @@ export const AstrologyChat = ({ birthChart, language }: AstrologyChatProps) => {
           Powered by advanced astrological AI • All answers based on your birth chart
         </p>
       </div>
-    </Card>
+    </div>
   );
 };

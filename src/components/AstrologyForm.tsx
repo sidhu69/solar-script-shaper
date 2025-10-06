@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,11 +16,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
 interface AstrologyFormProps {
-  onResults: (data: any) => void;
   onLoading: (loading: boolean) => void;
 }
 
-export const AstrologyForm = ({ onResults, onLoading }: AstrologyFormProps) => {
+export const AstrologyForm = ({ onLoading }: AstrologyFormProps) => {
+  const navigate = useNavigate();
   const [birthDate, setBirthDate] = useState("");
   const [birthTime, setBirthTime] = useState("");
   const [birthPlace, setBirthPlace] = useState("");
@@ -54,7 +55,7 @@ export const AstrologyForm = ({ onResults, onLoading }: AstrologyFormProps) => {
 
       if (error) throw error;
 
-      onResults(data);
+      navigate("/astrology", { state: { reportData: data } });
       toast({
         title: "✨ Report Generated",
         description: "Your cosmic blueprint has been revealed!",
