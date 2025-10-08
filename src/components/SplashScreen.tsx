@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { Sparkles, Moon, Sun, Star } from "lucide-react";
 
 interface SplashScreenProps {
   onComplete: () => void;
@@ -12,213 +12,73 @@ export const SplashScreen = ({ onComplete }: SplashScreenProps) => {
     const timer = setTimeout(() => {
       setFadeOut(true);
       setTimeout(onComplete, 1000);
-    }, 5000);
+    }, 3000);
 
     return () => clearTimeout(timer);
   }, [onComplete]);
 
   return (
-    <motion.div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-purple-900 via-purple-700 to-purple-950 overflow-hidden"
-      initial={{ opacity: 1 }}
-      animate={{ opacity: fadeOut ? 0 : 1 }}
-      transition={{ duration: 1 }}
+    <div
+      className={`fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-cosmic-purple via-background to-cosmic-purple transition-opacity duration-1000 ${
+        fadeOut ? "opacity-0" : "opacity-100"
+      }`}
     >
-      {/* Animated Stars Background */}
-      <div className="absolute inset-0">
-        {[...Array(50)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute w-1 h-1 bg-white rounded-full"
-            style={{
-              top: `${Math.random() * 100}%`,
-              left: `${Math.random() * 100}%`,
-            }}
-            animate={{
-              opacity: [0, 1, 0],
-              scale: [0, 1, 0],
-            }}
-            transition={{
-              duration: 2 + Math.random() * 2,
-              repeat: Infinity,
-              delay: Math.random() * 2,
-            }}
-          />
-        ))}
-      </div>
+      <div className="relative flex flex-col items-center justify-center space-y-8 animate-fade-in">
+        {/* Orbiting astrology symbols */}
+        <div className="relative w-64 h-64">
+          {/* Center sparkle */}
+          <div className="absolute inset-0 flex items-center justify-center">
+            <Sparkles className="w-16 h-16 text-celestial-gold animate-pulse-glow" />
+          </div>
 
-      {/* Animated Planets */}
-      <motion.div
-        className="absolute top-20 left-20 w-16 h-16 rounded-full bg-gradient-to-br from-orange-400 to-red-600"
-        animate={{
-          x: [0, 100, 0],
-          y: [0, 50, 0],
-          rotate: 360,
-        }}
-        transition={{
-          duration: 4,
-          repeat: Infinity,
-          ease: "linear",
-        }}
-      >
-        <div className="absolute inset-2 rounded-full bg-gradient-to-br from-yellow-200 to-orange-400 opacity-60" />
-      </motion.div>
+          {/* Orbiting Sun */}
+          <div className="absolute inset-0 animate-[spin_8s_linear_infinite]">
+            <Sun className="absolute top-0 left-1/2 -translate-x-1/2 w-10 h-10 text-accent drop-shadow-[0_0_15px_rgba(251,191,36,0.8)]" />
+          </div>
 
-      <motion.div
-        className="absolute bottom-32 right-32 w-20 h-20 rounded-full bg-gradient-to-br from-blue-400 to-blue-800"
-        animate={{
-          x: [0, -80, 0],
-          y: [0, -60, 0],
-          rotate: -360,
-        }}
-        transition={{
-          duration: 5,
-          repeat: Infinity,
-          ease: "linear",
-        }}
-      >
-        <div className="absolute inset-3 rounded-full border-2 border-blue-300 opacity-40" />
-      </motion.div>
+          {/* Orbiting Moon */}
+          <div className="absolute inset-0 animate-[spin_6s_linear_infinite_reverse]">
+            <Moon className="absolute bottom-0 left-1/2 -translate-x-1/2 w-10 h-10 text-primary drop-shadow-[0_0_15px_rgba(168,85,247,0.8)]" />
+          </div>
 
-      <motion.div
-        className="absolute top-1/3 right-1/4 w-12 h-12 rounded-full bg-gradient-to-br from-purple-400 to-purple-700"
-        animate={{
-          x: [0, -60, 0],
-          y: [0, 80, 0],
-          rotate: 360,
-        }}
-        transition={{
-          duration: 6,
-          repeat: Infinity,
-          ease: "linear",
-        }}
-      />
-
-      <motion.div
-        className="absolute bottom-1/4 left-1/3 w-14 h-14 rounded-full bg-gradient-to-br from-green-400 to-emerald-700"
-        animate={{
-          x: [0, 70, 0],
-          y: [0, -70, 0],
-          rotate: -360,
-        }}
-        transition={{
-          duration: 5.5,
-          repeat: Infinity,
-          ease: "linear",
-        }}
-      />
-
-      <motion.div
-        className="absolute top-1/2 left-1/4 w-10 h-10 rounded-full bg-gradient-to-br from-red-400 to-pink-600"
-        animate={{
-          x: [0, 90, 0],
-          y: [0, -50, 0],
-          rotate: 360,
-        }}
-        transition={{
-          duration: 4.5,
-          repeat: Infinity,
-          ease: "linear",
-        }}
-      />
-
-      {/* Saturn-like planet with rings */}
-      <motion.div
-        className="absolute top-1/4 left-1/2 w-24 h-24"
-        animate={{
-          x: [0, -100, 0],
-          y: [0, 100, 0],
-          rotate: 360,
-        }}
-        transition={{
-          duration: 7,
-          repeat: Infinity,
-          ease: "linear",
-        }}
-      >
-        <div className="relative w-full h-full">
-          <div className="absolute inset-0 rounded-full bg-gradient-to-br from-yellow-300 to-amber-600" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-8 border-4 border-amber-400 rounded-full opacity-60" 
-               style={{ transform: 'translate(-50%, -50%) rotateX(75deg)' }} />
+          {/* Orbiting Stars */}
+          <div className="absolute inset-0 animate-[spin_10s_linear_infinite]">
+            <Star className="absolute left-0 top-1/2 -translate-y-1/2 w-8 h-8 text-secondary drop-shadow-[0_0_15px_rgba(236,72,153,0.8)]" />
+          </div>
+          <div className="absolute inset-0 animate-[spin_10s_linear_infinite_reverse]">
+            <Star className="absolute right-0 top-1/2 -translate-y-1/2 w-8 h-8 text-celestial-gold drop-shadow-[0_0_15px_rgba(251,191,36,0.8)]" />
+          </div>
         </div>
-      </motion.div>
 
-      {/* Center Text */}
-      <motion.div
-        className="relative z-10 text-center"
-        initial={{ opacity: 0, scale: 0.5 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{
-          duration: 1,
-          delay: 0.5,
-        }}
-      >
-        <motion.h1
-          className="text-6xl md:text-8xl font-extrabold text-white mb-4"
-          animate={{
-            textShadow: [
-              "0 0 20px rgba(255,255,255,0.5)",
-              "0 0 40px rgba(255,255,255,0.8)",
-              "0 0 20px rgba(255,255,255,0.5)",
-            ],
-          }}
-          transition={{
-            duration: 2,
-            repeat: Infinity,
-          }}
-        >
-          Built By
-        </motion.h1>
-        <motion.h2
-          className="text-7xl md:text-9xl font-extrabold text-gradient-cosmic"
-          animate={{
-            textShadow: [
-              "0 0 30px rgba(139,92,246,0.5)",
-              "0 0 60px rgba(139,92,246,0.8)",
-              "0 0 30px rgba(139,92,246,0.5)",
-            ],
-          }}
-          transition={{
-            duration: 2,
-            repeat: Infinity,
-            delay: 0.3,
-          }}
-        >
-          Prothon
-        </motion.h2>
-      </motion.div>
+        {/* Brand text */}
+        <div className="text-center space-y-4 animate-fade-in">
+          <h1 className="text-5xl font-bold text-gradient-cosmic drop-shadow-[0_0_30px_rgba(168,85,247,0.5)]">
+            Built By Prothon
+          </h1>
+          <div className="flex items-center justify-center gap-2">
+            <div className="h-px w-12 bg-gradient-to-r from-transparent via-celestial-gold to-transparent" />
+            <Sparkles className="w-5 h-5 text-celestial-gold animate-pulse" />
+            <div className="h-px w-12 bg-gradient-to-r from-transparent via-celestial-gold to-transparent" />
+          </div>
+        </div>
 
-      {/* Orbiting particles */}
-      {[...Array(8)].map((_, i) => (
-        <motion.div
-          key={`particle-${i}`}
-          className="absolute w-2 h-2 bg-white rounded-full"
-          style={{
-            top: "50%",
-            left: "50%",
-          }}
-          animate={{
-            x: [
-              0,
-              Math.cos((i / 8) * Math.PI * 2) * 200,
-              Math.cos((i / 8) * Math.PI * 2 + Math.PI) * 200,
-              0,
-            ],
-            y: [
-              0,
-              Math.sin((i / 8) * Math.PI * 2) * 200,
-              Math.sin((i / 8) * Math.PI * 2 + Math.PI) * 200,
-              0,
-            ],
-            opacity: [0, 1, 1, 0],
-          }}
-          transition={{
-            duration: 4,
-            repeat: Infinity,
-            delay: (i / 8) * 0.5,
-          }}
-        />
-      ))}
-    </motion.div>
+        {/* Floating particles */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          {[...Array(20)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute w-1 h-1 bg-celestial-gold rounded-full animate-float"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                animationDelay: `${Math.random() * 3}s`,
+                animationDuration: `${3 + Math.random() * 4}s`,
+                opacity: Math.random() * 0.5 + 0.3,
+              }}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
   );
 };
