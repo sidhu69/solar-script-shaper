@@ -29,14 +29,26 @@ function getWesternZodiacSign(month: number, day: number): string {
   return "Capricorn";
 }
 
+// Calculate which house a planet is in based on its position and the ascendant
+function calculateHouse(planetDegree: number, ascendantDegree: number): number {
+  // Normalize degrees to 0-360
+  let houseDegree = planetDegree - ascendantDegree;
+  if (houseDegree < 0) houseDegree += 360;
+  
+  // Each house spans 30 degrees, starting from the ascendant (1st house)
+  const house = Math.floor(houseDegree / 30) + 1;
+  return house > 12 ? house - 12 : house;
+}
+
 // Calculate planetary positions (simplified rule-based)
-function calculatePlanets(date: Date, systemType: string) {
+function calculatePlanets(date: Date, systemType: string, ascendantDegree: number) {
   const dayOfYear = Math.floor((date.getTime() - new Date(date.getFullYear(), 0, 0).getTime()) / 86400000);
   const year = date.getFullYear();
   
   // Simplified calculations for demonstration
   const sunSign = getWesternZodiacSign(date.getMonth() + 1, date.getDate());
-  const sunDegree = ((dayOfYear * 0.9856) % 360).toFixed(2);
+  const sunDegreeRaw = (dayOfYear * 0.9856) % 360;
+  const sunDegree = sunDegreeRaw.toFixed(2);
   
   const moonCycle = ((dayOfYear * 13.176) % 360);
   const moonSignIndex = Math.floor(moonCycle / 30);
@@ -63,19 +75,61 @@ function calculatePlanets(date: Date, systemType: string) {
   const saturnSignIndex = Math.floor(saturnPos / 30);
   const saturnSign = zodiacSigns[saturnSignIndex];
   
+  const rahuPos = ((marsPos + 180) % 360);
+  const rahuSignIndex = Math.floor(rahuPos / 30);
+  
+  const ketuPos = marsPos;
+  const ketuSignIndex = Math.floor(ketuPos / 30);
+  
   // Vedic adjustment (approximately 23 degrees)
   const vedicOffset = systemType === "vedic" ? -23 : 0;
   
   return {
-    sun: { sign: sunSign, degree: sunDegree, house: "1st" },
-    moon: { sign: moonSign, degree: moonDegree, house: "4th" },
-    mercury: { sign: mercurySign, degree: (mercuryPos % 30).toFixed(2), house: "3rd" },
-    venus: { sign: venusSign, degree: (venusPos % 30).toFixed(2), house: "7th" },
-    mars: { sign: marsSign, degree: (marsPos % 30).toFixed(2), house: "10th" },
-    jupiter: { sign: jupiterSign, degree: (jupiterPos % 30).toFixed(2), house: "9th" },
-    saturn: { sign: saturnSign, degree: (saturnPos % 30).toFixed(2), house: "10th" },
-    rahu: { sign: zodiacSigns[(marsSignIndex + 6) % 12], degree: "15.23", house: "6th" },
-    ketu: { sign: zodiacSigns[(marsSignIndex) % 12], degree: "15.23", house: "12th" }
+    sun: { 
+      sign: sunSign, 
+      degree: sunDegree, 
+      house: calculateHouse(sunDegreeRaw, ascendantDegree)
+    },
+    moon: { 
+      sign: moonSign, 
+      degree: moonDegree, 
+      house: calculateHouse(moonCycle, ascendantDegree)
+    },
+    mercury: { 
+      sign: mercurySign, 
+      degree: (mercuryPos % 30).toFixed(2), 
+      house: calculateHouse(mercuryPos, ascendantDegree)
+    },
+    venus: { 
+      sign: venusSign, 
+      degree: (venusPos % 30).toFixed(2), 
+      house: calculateHouse(venusPos, ascendantDegree)
+    },
+    mars: { 
+      sign: marsSign, 
+      degree: (marsPos % 30).toFixed(2), 
+      house: calculateHouse(marsPos, ascendantDegree)
+    },
+    jupiter: { 
+      sign: jupiterSign, 
+      degree: (jupiterPos % 30).toFixed(2), 
+      house: calculateHouse(jupiterPos, ascendantDegree)
+    },
+    saturn: { 
+      sign: saturnSign, 
+      degree: (saturnPos % 30).toFixed(2), 
+      house: calculateHouse(saturnPos, ascendantDegree)
+    },
+    rahu: { 
+      sign: zodiacSigns[rahuSignIndex], 
+      degree: (rahuPos % 30).toFixed(2), 
+      house: calculateHouse(rahuPos, ascendantDegree)
+    },
+    ketu: { 
+      sign: zodiacSigns[ketuSignIndex], 
+      degree: (ketuPos % 30).toFixed(2), 
+      house: calculateHouse(ketuPos, ascendantDegree)
+    }
   };
 }
 
@@ -180,9 +234,12 @@ serve(async (req) => {
     const [hours, minutes] = birthTime.split(":").map(Number);
     const ascendantIndex = Math.floor((hours * 2 + minutes / 30) % 12);
     const ascendant = zodiacSigns[ascendantIndex];
+    
+    // Calculate ascendant degree (0-360)
+    const ascendantDegree = (ascendantIndex * 30) + ((minutes / 60) * 30);
 
-    // Calculate planetary positions
-    const planets = calculatePlanets(date, systemType);
+    // Calculate planetary positions with house calculations
+    const planets = calculatePlanets(date, systemType, ascendantDegree);
 
     // Generate interpretations
     const interpretations = generateInterpretations(planets, ascendant);
