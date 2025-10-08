@@ -118,13 +118,21 @@ export const BirthChartView = ({ data, language }: BirthChartViewProps) => {
               key={index}
               className="flex items-center justify-between p-4 rounded-lg bg-secondary/20 border border-secondary/30"
             >
-              <div>
+              <div className="flex-1">
                 <h4 className="font-semibold text-foreground">{planet.name}</h4>
                 <p className="text-sm text-muted-foreground">{planet.meaning}</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {isHinglish ? `${planet.house} Ghar mein` : `In House ${planet.house}`}
+                </p>
               </div>
-              <Badge variant="outline" className="border-accent/30 bg-accent/10">
-                {planet.sign}
-              </Badge>
+              <div className="flex flex-col gap-2 items-end">
+                <Badge variant="outline" className="border-accent/30 bg-accent/10">
+                  {planet.sign}
+                </Badge>
+                <Badge variant="outline" className="border-primary/30 bg-primary/10 text-xs">
+                  {isHinglish ? `${planet.house} Ghar` : `House ${planet.house}`}
+                </Badge>
+              </div>
             </div>
           ))}
         </div>
