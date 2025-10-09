@@ -100,7 +100,8 @@ export const AstrologyChat = ({ birthChart, language }: AstrologyChatProps) => {
 
           try {
             const parsed = JSON.parse(jsonStr);
-            const content = parsed.choices?.[0]?.delta?.content as string | undefined;
+            // Handle Google Gemini's response format
+            const content = parsed.candidates?.[0]?.content?.parts?.[0]?.text as string | undefined;
             if (content) {
               assistantContent += content;
               setMessages(prev => {

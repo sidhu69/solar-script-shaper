@@ -39,9 +39,9 @@ serve(async (req) => {
       hasBirthChart: !!birthChart 
     });
 
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) {
-      throw new Error("LOVABLE_API_KEY is not configured");
+    const GOOGLE_GEMINI_API_KEY = Deno.env.get("GOOGLE_GEMINI_API_KEY");
+    if (!GOOGLE_GEMINI_API_KEY) {
+      throw new Error("GOOGLE_GEMINI_API_KEY is not configured");
     }
 
     // Build context about user's birth chart
@@ -68,21 +68,35 @@ Ketu (South Node): ${birthChart.planets.ketu.sign} at ${birthChart.planets.ketu.
 Use this birth chart data to provide specific, personalized astrological insights to the user's questions.
 ` : "";
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
-        messages: [
-          { role: "system", content: getAstrologySystemPrompt(language) + chartContext },
-          ...messages
-        ],
-        stream: true,
-      }),
+    // Convert messages to Google Gemini format
+    const systemPrompt = getAstrologySystemPrompt(language) + chartContext;
+    const contents = messages.map((msg: any) => ({
+      role: msg.role === 'assistant' ? 'model' : 'user',
+      parts: [{ text: msg.content }]
+    }));
+
+    // Add system prompt as first user message
+    contents.unshift({
+      role: 'user',
+      parts: [{ text: systemPrompt }]
     });
+
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:streamGenerateContent?key=${GOOGLE_GEMINI_API_KEY}&alt=sse`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          contents,
+          generationConfig: {
+            temperature: 0.8,
+            maxOutputTokens: 1024,
+          }
+        }),
+      }
+    );
 
     if (!response.ok) {
       if (response.status === 429) {
