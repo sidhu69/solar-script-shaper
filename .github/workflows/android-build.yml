@@ -49,7 +49,7 @@ jobs:
 
       # 8. Generate Android icons from resources/icon.png
       - name: Generate Android icons
-        run: node scripts/generate-android-icons.js
+        run: node scripts/generate-android-icons.cjs
 
       # 9. Sync Capacitor
       - name: Sync Capacitor
