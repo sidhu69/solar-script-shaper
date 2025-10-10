@@ -30,7 +30,7 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      # 4. Install dependencies (including Sharp)
+      # 4. Install dependencies
       - name: Install dependencies
         run: npm install
 
@@ -47,9 +47,20 @@ jobs:
       - name: Add Android platform
         run: npx cap add android || echo "Android already added"
 
-      # 8. Generate new Android icons
-      - name: Generate Android icons
-        run: node scripts/generate-android-icons.cjs
+      # 8. Replace old icons with your new icon
+      - name: Replace Android icons
+        run: |
+          mkdir -p android/app/src/main/res/mipmap-*/ || true
+          cp resources/icon.png android/app/src/main/res/mipmap-mdpi/ic_launcher.png
+          cp resources/icon.png android/app/src/main/res/mipmap-mdpi/ic_launcher_round.png
+          cp resources/icon.png android/app/src/main/res/mipmap-hdpi/ic_launcher.png
+          cp resources/icon.png android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png
+          cp resources/icon.png android/app/src/main/res/mipmap-xhdpi/ic_launcher.png
+          cp resources/icon.png android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png
+          cp resources/icon.png android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png
+          cp resources/icon.png android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png
+          cp resources/icon.png android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
+          cp resources/icon.png android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png
 
       # 9. Sync Capacitor
       - name: Sync Capacitor
