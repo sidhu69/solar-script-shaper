@@ -1,4 +1,4 @@
-// scripts/generate-android-icons.js
+// scripts/generate-android-icons.cjs
 const sharp = require("sharp");
 const fs = require("fs");
 const path = require("path");
@@ -15,7 +15,7 @@ const sizes = {
   "mipmap-xxxhdpi": 192
 };
 
-async function generateIcons() {
+(async () => {
   for (const [folder, size] of Object.entries(sizes)) {
     const dir = path.join(RES_PATH, folder);
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
@@ -29,9 +29,4 @@ async function generateIcons() {
       .toFile(path.join(dir, "ic_launcher_round.png"));
   }
   console.log("Android icons generated successfully!");
-}
-
-generateIcons().catch(err => {
-  console.error(err);
-  process.exit(1);
-});
+})();
