@@ -11,9 +11,9 @@ jobs:
   build:
     name: Build Android APK
     runs-on: ubuntu-latest
-    
+
     steps:
-      # 1. Checkout repository
+      # 1. Checkout repo
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -30,7 +30,7 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      # 4. Install dependencies
+      # 4. Install dependencies (including Sharp)
       - name: Install dependencies
         run: npm install
 
@@ -38,7 +38,7 @@ jobs:
       - name: Build Vite app
         run: npm run build
 
-      # 6. Initialize Capacitor (first time only)
+      # 6. Initialize Capacitor
       - name: Initialize Capacitor
         run: |
           npx cap init "Celestial Oracle" "com.celestial.oracle" --web-dir=dist || echo "Already initialized"
@@ -47,27 +47,23 @@ jobs:
       - name: Add Android platform
         run: npx cap add android || echo "Android already added"
 
-      # 8. Install Sharp for icon generation
-      - name: Install Sharp
-        run: npm install sharp
-
-      # 9. Generate Android icons from resources/icon.png
+      # 8. Generate new Android icons
       - name: Generate Android icons
         run: node scripts/generate-android-icons.cjs
 
-      # 10. Sync Capacitor
+      # 9. Sync Capacitor
       - name: Sync Capacitor
         run: npx cap sync android
 
-      # 11. Make gradlew executable
+      # 10. Make gradlew executable
       - name: Make gradlew executable
         run: chmod +x android/gradlew
 
-      # 12. Build debug APK
+      # 11. Build debug APK
       - name: Build debug APK
         run: cd android && ./gradlew assembleDebug --stacktrace
 
-      # 13. Upload APK as artifact
+      # 12. Upload APK
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
