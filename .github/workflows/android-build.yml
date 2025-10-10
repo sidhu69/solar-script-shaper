@@ -23,14 +23,14 @@ jobs:
         with:
           node-version: '20'
 
-      # 3. Setup Java (required for Android)
+      # 3. Setup Java
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
 
-      # 4. Install dependencies (includes sharp)
+      # 4. Install dependencies
       - name: Install dependencies
         run: npm install
 
@@ -47,23 +47,27 @@ jobs:
       - name: Add Android platform
         run: npx cap add android || echo "Android already added"
 
-      # 8. Generate Android icons from resources/icon.png
+      # 8. Install Sharp for icon generation
+      - name: Install Sharp
+        run: npm install sharp
+
+      # 9. Generate Android icons from resources/icon.png
       - name: Generate Android icons
         run: node scripts/generate-android-icons.cjs
 
-      # 9. Sync Capacitor
+      # 10. Sync Capacitor
       - name: Sync Capacitor
         run: npx cap sync android
 
-      # 10. Make gradlew executable
+      # 11. Make gradlew executable
       - name: Make gradlew executable
         run: chmod +x android/gradlew
 
-      # 11. Build debug APK
+      # 12. Build debug APK
       - name: Build debug APK
         run: cd android && ./gradlew assembleDebug --stacktrace
 
-      # 12. Upload APK as artifact
+      # 13. Upload APK as artifact
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
