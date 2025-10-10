@@ -1,11 +1,11 @@
 name: Build Android APK
-run-name: Building Celestial Oracle Android App 🚀
+run-name: Build Celestial Oracle Android App 🚀
 
 on:
   push:
     branches:
       - main
-  workflow_dispatch:  # Allows manual trigger
+  workflow_dispatch:
 
 jobs:
   build:
@@ -30,7 +30,7 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      # 4. Install dependencies (changed from npm ci to npm install)
+      # 4. Install dependencies
       - name: Install dependencies
         run: npm install
 
@@ -47,19 +47,23 @@ jobs:
       - name: Add Android platform
         run: npx cap add android || echo "Android already added"
 
-      # 8. Sync Capacitor
+      # 8. Generate Android icons from resources/icon.png
+      - name: Generate Capacitor assets
+        run: npx capacitor-assets generate
+
+      # 9. Sync Capacitor
       - name: Sync Capacitor
         run: npx cap sync android
 
-      # 9. Make gradlew executable
+      # 10. Make gradlew executable
       - name: Make gradlew executable
         run: chmod +x android/gradlew
 
-      # 10. Build debug APK
+      # 11. Build debug APK
       - name: Build debug APK
         run: cd android && ./gradlew assembleDebug --stacktrace
 
-      # 11. Upload APK as artifact
+      # 12. Upload APK as artifact
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
