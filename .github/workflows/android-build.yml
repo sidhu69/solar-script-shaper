@@ -65,23 +65,29 @@ jobs:
             echo "✅ Google Play Services already present"
           fi
           
-      # 10. Configure AdMob
+      # 10. Configure AdMob using xmlstarlet
       - name: Configure AdMob
         run: |
+          # Install xmlstarlet for proper XML manipulation
+          sudo apt-get update && sudo apt-get install -y xmlstarlet
+          
           MANIFEST="android/app/src/main/AndroidManifest.xml"
           
           # Check if AdMob is already configured
           if ! grep -q "com.google.android.gms.ads.APPLICATION_ID" "$MANIFEST"; then
-            # Use awk to insert the meta-data tag properly
-            awk '/<application/{print; print "        <meta-data"; print "            android:name=\"com.google.android.gms.ads.APPLICATION_ID\""; print "            android:value=\"ca-app-pub-3375938019790298~8473700663\" />"; next}1' "$MANIFEST" > "$MANIFEST.tmp"
-            mv "$MANIFEST.tmp" "$MANIFEST"
+            # Use xmlstarlet to properly add the meta-data element
+            xmlstarlet ed -L \
+              -s "/manifest/application" -t elem -n "meta-data" -v "" \
+              -i "//application/meta-data[last()]" -t attr -n "android:name" -v "com.google.android.gms.ads.APPLICATION_ID" \
+              -i "//application/meta-data[last()]" -t attr -n "android:value" -v "ca-app-pub-3375938019790298~8473700663" \
+              "$MANIFEST"
             echo "✅ AdMob App ID added to AndroidManifest.xml"
           else
             echo "✅ AdMob already configured"
           fi
           
-          echo "--- AndroidManifest.xml (first 50 lines) ---"
-          head -50 "$MANIFEST"
+          echo "--- AndroidManifest.xml content ---"
+          cat "$MANIFEST"
 
       # 11. Replace Android icons
       - name: Replace Android icons
