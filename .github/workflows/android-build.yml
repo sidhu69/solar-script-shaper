@@ -50,7 +50,11 @@ jobs:
       # 8. Replace old icons with your new icon
       - name: Replace Android icons
         run: |
-          mkdir -p android/app/src/main/res/mipmap-*/ || true
+          mkdir -p android/app/src/main/res/mipmap-mdpi
+          mkdir -p android/app/src/main/res/mipmap-hdpi
+          mkdir -p android/app/src/main/res/mipmap-xhdpi
+          mkdir -p android/app/src/main/res/mipmap-xxhdpi
+          mkdir -p android/app/src/main/res/mipmap-xxxhdpi
           cp resources/icon.png android/app/src/main/res/mipmap-mdpi/ic_launcher.png
           cp resources/icon.png android/app/src/main/res/mipmap-mdpi/ic_launcher_round.png
           cp resources/icon.png android/app/src/main/res/mipmap-hdpi/ic_launcher.png
