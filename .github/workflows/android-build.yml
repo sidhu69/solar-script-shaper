@@ -45,7 +45,9 @@ jobs:
 
       # 7. Add Android platform
       - name: Add Android platform
-        run: npx cap add android || echo "Android already added"
+        run: |
+          npx cap add android || echo "Android already added"
+          npx cap sync android
 
       # 8. Replace old icons with your new icon
       - name: Replace Android icons
@@ -66,19 +68,15 @@ jobs:
           cp resources/icon.png android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
           cp resources/icon.png android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png
 
-      # 9. Sync Capacitor
-      - name: Sync Capacitor
-        run: npx cap sync android
-
-      # 10. Make gradlew executable
+      # 9. Make gradlew executable
       - name: Make gradlew executable
         run: chmod +x android/gradlew
 
-      # 11. Build debug APK
+      # 10. Build debug APK
       - name: Build debug APK
         run: cd android && ./gradlew assembleDebug --stacktrace
 
-      # 12. Upload APK
+      # 11. Upload APK
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
