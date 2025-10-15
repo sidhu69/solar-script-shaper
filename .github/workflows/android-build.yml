@@ -89,24 +89,51 @@ jobs:
           echo "--- AndroidManifest.xml content ---"
           cat "$MANIFEST"
 
-      # 11. Replace Android icons
-      - name: Replace Android icons
+      # 11. Replace Android icons with proper resizing
+      - name: Replace Android icons with proper resizing
         run: |
+          # Check if custom icon exists
+          if [ ! -f "resources/icon.png" ]; then
+            echo "❌ Custom icon not found at resources/icon.png"
+            exit 1
+          fi
+          
+          echo "✅ Custom icon found"
+          echo "📦 Installing ImageMagick for proper icon resizing..."
+          sudo apt-get install -y imagemagick
+          
+          # Create all mipmap directories
           mkdir -p android/app/src/main/res/mipmap-mdpi
           mkdir -p android/app/src/main/res/mipmap-hdpi
           mkdir -p android/app/src/main/res/mipmap-xhdpi
           mkdir -p android/app/src/main/res/mipmap-xxhdpi
           mkdir -p android/app/src/main/res/mipmap-xxxhdpi
-          cp resources/icon.png android/app/src/main/res/mipmap-mdpi/ic_launcher.png
-          cp resources/icon.png android/app/src/main/res/mipmap-mdpi/ic_launcher_round.png
-          cp resources/icon.png android/app/src/main/res/mipmap-hdpi/ic_launcher.png
-          cp resources/icon.png android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png
-          cp resources/icon.png android/app/src/main/res/mipmap-xhdpi/ic_launcher.png
-          cp resources/icon.png android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png
-          cp resources/icon.png android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png
-          cp resources/icon.png android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png
-          cp resources/icon.png android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
-          cp resources/icon.png android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png
+          
+          echo "🎨 Resizing icons for different screen densities..."
+          
+          # MDPI - 48x48
+          convert resources/icon.png -resize 48x48 android/app/src/main/res/mipmap-mdpi/ic_launcher.png
+          convert resources/icon.png -resize 48x48 android/app/src/main/res/mipmap-mdpi/ic_launcher_round.png
+          
+          # HDPI - 72x72
+          convert resources/icon.png -resize 72x72 android/app/src/main/res/mipmap-hdpi/ic_launcher.png
+          convert resources/icon.png -resize 72x72 android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png
+          
+          # XHDPI - 96x96
+          convert resources/icon.png -resize 96x96 android/app/src/main/res/mipmap-xhdpi/ic_launcher.png
+          convert resources/icon.png -resize 96x96 android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png
+          
+          # XXHDPI - 144x144
+          convert resources/icon.png -resize 144x144 android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png
+          convert resources/icon.png -resize 144x144 android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png
+          
+          # XXXHDPI - 192x192
+          convert resources/icon.png -resize 192x192 android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
+          convert resources/icon.png -resize 192x192 android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png
+          
+          echo "✅ Custom icons applied successfully with proper sizes"
+          echo "📋 Icon files created:"
+          ls -lh android/app/src/main/res/mipmap-*/ | grep ic_launcher
 
       # 12. Make gradlew executable
       - name: Make gradlew executable
