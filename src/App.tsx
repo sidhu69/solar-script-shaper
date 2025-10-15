@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { SplashScreen } from "@/components/SplashScreen";
+import { AdMobService } from "@/services/admob";
 import Index from "./pages/Index";
 import AstrologyView from "./pages/AstrologyView";
 import NotFound from "./pages/NotFound";
@@ -13,6 +14,13 @@ const queryClient = new QueryClient();
 
 const App = () => {
   const [showSplash, setShowSplash] = useState(true);
+
+  useEffect(() => {
+    // Initialize AdMob
+    AdMobService.initialize();
+    AdMobService.addInterstitialListeners();
+    AdMobService.prepareInterstitial();
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>

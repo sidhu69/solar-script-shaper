@@ -6,6 +6,12 @@ const config: CapacitorConfig = {
   webDir: 'dist',
   server: {
     androidScheme: 'https'
+  },
+  plugins: {
+    AdMob: {
+      appId: 'ca-app-pub-3375938019790298~8473700663',
+      testingDevices: [],
+    }
   }
 };
 

@@ -5,6 +5,7 @@ import { BirthChartView } from "@/components/BirthChartView";
 import { Watermark } from "@/components/Watermark";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MessageCircle, LineChart } from "lucide-react";
+import { AdMobService } from "@/services/admob";
 
 const AstrologyView = () => {
   const location = useLocation();
@@ -14,7 +15,17 @@ const AstrologyView = () => {
   useEffect(() => {
     if (!reportData) {
       navigate("/");
+    } else {
+      // Show interstitial ad when entering astrology view
+      AdMobService.showInterstitial();
+      // Show banner ad
+      AdMobService.showBanner();
     }
+    
+    return () => {
+      // Clean up banner when leaving page
+      AdMobService.removeBanner();
+    };
   }, [reportData, navigate]);
 
   if (!reportData) {

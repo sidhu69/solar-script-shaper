@@ -1,10 +1,21 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AstrologyForm } from "@/components/AstrologyForm";
 import { Watermark } from "@/components/Watermark";
 import { Sparkles, Stars } from "lucide-react";
+import { AdMobService } from "@/services/admob";
 
 const Index = () => {
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    // Show banner ad on home page
+    AdMobService.showBanner();
+    
+    return () => {
+      // Clean up banner when leaving page
+      AdMobService.removeBanner();
+    };
+  }, []);
 
   return (
     <div className="min-h-screen relative overflow-hidden">
