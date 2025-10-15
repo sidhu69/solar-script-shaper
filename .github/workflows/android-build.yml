@@ -38,23 +38,23 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      # 5. Build Vite app
+      # 6. Build Vite app
       - name: Build Vite app
         run: npm run build
 
-      # 6. Verify Capacitor Config
+      # 7. Verify Capacitor Config
       - name: Verify Capacitor Config
         run: |
           echo "✅ Using existing capacitor.config.ts"
           cat capacitor.config.ts
 
-      # 7. Add Android platform
+      # 8. Add Android platform
       - name: Add Android platform
         run: |
           npx cap add android || echo "Android already added"
           npx cap sync android
       
-      # 8. Add Google Play Services for AdMob
+      # 9. Add Google Play Services for AdMob
       - name: Add Google Play Services
         run: |
           BUILD_GRADLE="android/app/build.gradle"
@@ -65,20 +65,23 @@ jobs:
             echo "✅ Google Play Services already present"
           fi
           
-      # 9. Configure AdMob in AndroidManifest
+      # 10. Configure AdMob in AndroidManifest
       - name: Configure AdMob in AndroidManifest
         run: |
           MANIFEST="android/app/src/main/AndroidManifest.xml"
           
+          # Add AdMob App ID to manifest
           if ! grep -q "com.google.android.gms.ads.APPLICATION_ID" "$MANIFEST"; then
-            sed -i '/<application.*>/a\        <meta-data android:name="com.google.android.gms.ads.APPLICATION_ID" android:value="ca-app-pub-3375938019790298~8473700663" />' "$MANIFEST"
-            echo "✅ AdMob configured"
+            sed -i '/<application/a\        <meta-data\n            android:name="com.google.android.gms.ads.APPLICATION_ID"\n            android:value="ca-app-pub-3375938019790298~8473700663" />' "$MANIFEST"
+            echo "✅ AdMob App ID added to AndroidManifest"
           else
             echo "✅ AdMob already configured"
           fi
-          head -30 "$MANIFEST"
+          
+          echo "--- AndroidManifest.xml content ---"
+          cat "$MANIFEST"
 
-      # 10. Replace Android icons
+      # 11. Replace Android icons
       - name: Replace Android icons
         run: |
           mkdir -p android/app/src/main/res/mipmap-mdpi
@@ -97,7 +100,7 @@ jobs:
           cp resources/icon.png android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
           cp resources/icon.png android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png
 
-      # 11. Make gradlew executable
+      # 12. Make gradlew executable
       - name: Make gradlew executable
         run: |
           if [ -f android/gradlew ]; then
@@ -106,11 +109,11 @@ jobs:
             echo "gradlew not found after Capacitor sync"; ls -la android || true; exit 1
           fi
 
-      # 12. Build debug APK
+      # 13. Build debug APK
       - name: Build debug APK
         run: cd android && ./gradlew assembleDebug --stacktrace
 
-      # 13. Upload APK
+      # 14. Upload APK
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
