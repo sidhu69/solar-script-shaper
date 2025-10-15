@@ -89,53 +89,35 @@ jobs:
           echo "--- AndroidManifest.xml content ---"
           cat "$MANIFEST"
 
-      # 11. Replace Android icons with proper resizing
-      - name: Replace Android icons with proper resizing
+      # 11. Remove adaptive icon XML files (CRITICAL - This is what you were missing!)
+      - name: Remove XML icon overrides
         run: |
-          # Check if custom icon exists
-          if [ ! -f "resources/icon.png" ]; then
-            echo "❌ Custom icon not found at resources/icon.png"
-            exit 1
-          fi
-          
-          echo "✅ Custom icon found"
-          echo "📦 Installing ImageMagick for proper icon resizing..."
-          sudo apt-get install -y imagemagick
-          
-          # Create all mipmap directories
+          rm -rf android/app/src/main/res/mipmap-anydpi-v26/
+          echo "✅ Removed adaptive icon XML overrides that were blocking custom icons"
+
+      # 12. Replace Android icons
+      - name: Replace Android icons
+        run: |
           mkdir -p android/app/src/main/res/mipmap-mdpi
           mkdir -p android/app/src/main/res/mipmap-hdpi
           mkdir -p android/app/src/main/res/mipmap-xhdpi
           mkdir -p android/app/src/main/res/mipmap-xxhdpi
           mkdir -p android/app/src/main/res/mipmap-xxxhdpi
           
-          echo "🎨 Resizing icons for different screen densities..."
+          cp resources/icon.png android/app/src/main/res/mipmap-mdpi/ic_launcher.png
+          cp resources/icon.png android/app/src/main/res/mipmap-mdpi/ic_launcher_round.png
+          cp resources/icon.png android/app/src/main/res/mipmap-hdpi/ic_launcher.png
+          cp resources/icon.png android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png
+          cp resources/icon.png android/app/src/main/res/mipmap-xhdpi/ic_launcher.png
+          cp resources/icon.png android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png
+          cp resources/icon.png android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png
+          cp resources/icon.png android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png
+          cp resources/icon.png android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
+          cp resources/icon.png android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png
           
-          # MDPI - 48x48
-          convert resources/icon.png -resize 48x48 android/app/src/main/res/mipmap-mdpi/ic_launcher.png
-          convert resources/icon.png -resize 48x48 android/app/src/main/res/mipmap-mdpi/ic_launcher_round.png
-          
-          # HDPI - 72x72
-          convert resources/icon.png -resize 72x72 android/app/src/main/res/mipmap-hdpi/ic_launcher.png
-          convert resources/icon.png -resize 72x72 android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png
-          
-          # XHDPI - 96x96
-          convert resources/icon.png -resize 96x96 android/app/src/main/res/mipmap-xhdpi/ic_launcher.png
-          convert resources/icon.png -resize 96x96 android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png
-          
-          # XXHDPI - 144x144
-          convert resources/icon.png -resize 144x144 android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png
-          convert resources/icon.png -resize 144x144 android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png
-          
-          # XXXHDPI - 192x192
-          convert resources/icon.png -resize 192x192 android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
-          convert resources/icon.png -resize 192x192 android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png
-          
-          echo "✅ Custom icons applied successfully with proper sizes"
-          echo "📋 Icon files created:"
-          ls -lh android/app/src/main/res/mipmap-*/ | grep ic_launcher
+          echo "✅ Custom icons applied successfully"
 
-      # 12. Make gradlew executable
+      # 13. Make gradlew executable
       - name: Make gradlew executable
         run: |
           if [ -f android/gradlew ]; then
@@ -144,11 +126,11 @@ jobs:
             echo "gradlew not found after Capacitor sync"; ls -la android || true; exit 1
           fi
 
-      # 13. Build debug APK
+      # 14. Build debug APK
       - name: Build debug APK
         run: cd android && ./gradlew assembleDebug --stacktrace
 
-      # 14. Upload APK
+      # 15. Upload APK
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
