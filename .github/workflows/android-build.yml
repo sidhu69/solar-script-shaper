@@ -42,18 +42,43 @@ jobs:
       - name: Build Vite app
         run: npm run build
 
-      # 6. Initialize Capacitor
-      - name: Initialize Capacitor
+      # 6. Verify Capacitor Config
+      - name: Verify Capacitor Config
         run: |
-          npx cap init "Celestial Oracle" "com.celestial.oracle" --web-dir=dist || echo "Already initialized"
+          echo "✅ Using existing capacitor.config.ts"
+          cat capacitor.config.ts
 
       # 7. Add Android platform
       - name: Add Android platform
         run: |
           npx cap add android || echo "Android already added"
           npx cap sync android
+      
+      # 8. Add Google Play Services for AdMob
+      - name: Add Google Play Services
+        run: |
+          BUILD_GRADLE="android/app/build.gradle"
+          if ! grep -q "play-services-ads" "$BUILD_GRADLE"; then
+            sed -i '/dependencies {/a\    implementation '\''com.google.android.gms:play-services-ads:22.6.0'\''' "$BUILD_GRADLE"
+            echo "✅ Google Play Services added"
+          else
+            echo "✅ Google Play Services already present"
+          fi
+          
+      # 9. Configure AdMob in AndroidManifest
+      - name: Configure AdMob in AndroidManifest
+        run: |
+          MANIFEST="android/app/src/main/AndroidManifest.xml"
+          
+          if ! grep -q "com.google.android.gms.ads.APPLICATION_ID" "$MANIFEST"; then
+            sed -i '/<application/a\        <meta-data android:name="com.google.android.gms.ads.APPLICATION_ID" android:value="ca-app-pub-3375938019790298~8473700663" />' "$MANIFEST"
+            echo "✅ AdMob configured"
+          else
+            echo "✅ AdMob already configured"
+          fi
+          head -30 "$MANIFEST"
 
-      # 8. Replace old icons with your new icon
+      # 10. Replace Android icons
       - name: Replace Android icons
         run: |
           mkdir -p android/app/src/main/res/mipmap-mdpi
@@ -72,7 +97,7 @@ jobs:
           cp resources/icon.png android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
           cp resources/icon.png android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png
 
-      # 9. Make gradlew executable
+      # 11. Make gradlew executable
       - name: Make gradlew executable
         run: |
           if [ -f android/gradlew ]; then
@@ -82,11 +107,11 @@ jobs:
           fi
 
 
-      # 10. Build debug APK
+      # 12. Build debug APK
       - name: Build debug APK
         run: cd android && ./gradlew assembleDebug --stacktrace
 
-      # 11. Upload APK
+      # 13. Upload APK
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
