@@ -48,11 +48,11 @@ jobs:
           npx cap add android || echo "Android already added"
           npx cap sync android
 
-       # 8. Decode and setup keystore
+      # 8. Decode and setup keystore
       - name: Decode Keystore
         run: |
-          echo "${{ secrets.KEYSTORE_BASE64 }}" > /tmp/keystore_encoded.txt
-          base64 -d /tmp/keystore_encoded.txt > android/app/keystore.jks
+          mkdir -p android/app
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -D > android/app/keystore.jks
           ls -lh android/app/keystore.jks
 
       # 9. Make gradlew executable
