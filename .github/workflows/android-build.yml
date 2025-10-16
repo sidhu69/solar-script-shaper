@@ -1,4 +1,4 @@
-name: Build Android APK
+name: Build Android App Bundle
 run-name: Build Celestial Oracle Android App 🚀
 
 on:
@@ -9,7 +9,7 @@ on:
 
 jobs:
   build:
-    name: Build Android APK
+    name: Build Android App Bundle
     runs-on: ubuntu-latest
 
     steps:
@@ -42,98 +42,41 @@ jobs:
       - name: Build Vite app
         run: npm run build
 
-      # 7. Verify Capacitor Config
-      - name: Verify Capacitor Config
-        run: |
-          echo "✅ Using existing capacitor.config.ts"
-          cat capacitor.config.ts
-
-      # 8. Add Android platform
+      # 7. Add Android platform
       - name: Add Android platform
         run: |
           npx cap add android || echo "Android already added"
           npx cap sync android
-      
-      # 9. Add Google Play Services for AdMob
-      - name: Add Google Play Services
-        run: |
-          BUILD_GRADLE="android/app/build.gradle"
-          if ! grep -q "play-services-ads" "$BUILD_GRADLE"; then
-            sed -i '/dependencies {/a\    implementation '\''com.google.android.gms:play-services-ads:22.6.0'\''' "$BUILD_GRADLE"
-            echo "✅ Google Play Services added"
-          else
-            echo "✅ Google Play Services already present"
-          fi
-          
-      # 10. Configure AdMob using xmlstarlet
-      - name: Configure AdMob
-        run: |
-          # Install xmlstarlet for proper XML manipulation
-          sudo apt-get update && sudo apt-get install -y xmlstarlet
-          
-          MANIFEST="android/app/src/main/AndroidManifest.xml"
-          
-          # Check if AdMob is already configured
-          if ! grep -q "com.google.android.gms.ads.APPLICATION_ID" "$MANIFEST"; then
-            # Use xmlstarlet to properly add the meta-data element
-            xmlstarlet ed -L \
-              -s "/manifest/application" -t elem -n "meta-data" -v "" \
-              -i "//application/meta-data[last()]" -t attr -n "android:name" -v "com.google.android.gms.ads.APPLICATION_ID" \
-              -i "//application/meta-data[last()]" -t attr -n "android:value" -v "ca-app-pub-3375938019790298~8473700663" \
-              "$MANIFEST"
-            echo "✅ AdMob App ID added to AndroidManifest.xml"
-          else
-            echo "✅ AdMob already configured"
-          fi
-          
-          echo "--- AndroidManifest.xml content ---"
-          cat "$MANIFEST"
 
-      # 11. Remove adaptive icon XML files (CRITICAL - This is what you were missing!)
-      - name: Remove XML icon overrides
+      # 8. Decode and setup keystore
+      - name: Decode Keystore
         run: |
-          rm -rf android/app/src/main/res/mipmap-anydpi-v26/
-          echo "✅ Removed adaptive icon XML overrides that were blocking custom icons"
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > android/app/keystore.jks
+          ls -lh android/app/keystore.jks
 
-      # 12. Replace Android icons
-      - name: Replace Android icons
-        run: |
-          mkdir -p android/app/src/main/res/mipmap-mdpi
-          mkdir -p android/app/src/main/res/mipmap-hdpi
-          mkdir -p android/app/src/main/res/mipmap-xhdpi
-          mkdir -p android/app/src/main/res/mipmap-xxhdpi
-          mkdir -p android/app/src/main/res/mipmap-xxxhdpi
-          
-          cp resources/icon.png android/app/src/main/res/mipmap-mdpi/ic_launcher.png
-          cp resources/icon.png android/app/src/main/res/mipmap-mdpi/ic_launcher_round.png
-          cp resources/icon.png android/app/src/main/res/mipmap-hdpi/ic_launcher.png
-          cp resources/icon.png android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png
-          cp resources/icon.png android/app/src/main/res/mipmap-xhdpi/ic_launcher.png
-          cp resources/icon.png android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png
-          cp resources/icon.png android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png
-          cp resources/icon.png android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png
-          cp resources/icon.png android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
-          cp resources/icon.png android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png
-          
-          echo "✅ Custom icons applied successfully"
-
-      # 13. Make gradlew executable
+      # 9. Make gradlew executable
       - name: Make gradlew executable
+        run: chmod +x android/gradlew
+
+      # 10. Build App Bundle (AAB)
+      - name: Build App Bundle
         run: |
-          if [ -f android/gradlew ]; then
-            chmod +x android/gradlew
-          else
-            echo "gradlew not found after Capacitor sync"; ls -la android || true; exit 1
-          fi
+          cd android
+          ./gradlew bundleRelease \
+            -Pandroid.injected.signing.store.file=$(pwd)/app/keystore.jks \
+            -Pandroid.injected.signing.store.password="${{ secrets.KEYSTORE_PASSWORD }}" \
+            -Pandroid.injected.signing.key.alias="${{ secrets.KEY_ALIAS }}" \
+            -Pandroid.injected.signing.key.password="${{ secrets.KEY_PASSWORD }}" \
+            --stacktrace
 
-      # 14. Build debug APK
-      - name: Build debug APK
-        run: cd android && ./gradlew assembleDebug --stacktrace
-
-      # 15. Upload APK
-      - name: Upload APK
+      # 11. Upload App Bundle as artifact
+      - name: Upload App Bundle
         uses: actions/upload-artifact@v4
         with:
-          name: celestial-oracle-debug-apk
-          path: android/app/build/outputs/apk/debug/app-debug.apk
-          retention-days: 14
+          name: celestial-oracle-release-aab
+          path: android/app/build/outputs/bundle/release/app-release.aab
+          retention-days: 30
+
+      # 12. Display success message
+      - name: Build Success
+        run: echo "✅ App Bundle built successfully! Download from artifacts."
