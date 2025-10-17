@@ -30,9 +30,8 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
         with:
-          api-level: 35
-          target: google_apis
-          arch: x86_64
+          accept-android-sdk-licenses: true
+          packages: 'platforms;android-35 build-tools;35.0.0'
 
       - name: Install dependencies
         run: npm install
@@ -50,72 +49,47 @@ jobs:
 
       - name: Update Gradle properties globally
         run: |
-          # Create gradle.properties in android folder
           cat > android/gradle.properties << 'EOF'
           org.gradle.jvmargs=-Xmx4096m
           android.useAndroidX=true
           android.enableJetifier=true
-          android.compileSdkVersion=35
-          android.targetSdkVersion=35
-          android.minSdkVersion=24
           EOF
           
           echo "✅ gradle.properties created"
-          cat android/gradle.properties
 
-      - name: Update build.gradle with Python script
+      - name: Update build.gradle with API 35
         run: |
+          BUILD_GRADLE="android/app/build.gradle"
+          
           python3 << 'PYTHON_SCRIPT'
-          import os
+          import re
           
           gradle_file = "android/app/build.gradle"
           
-          # Read the file
           with open(gradle_file, 'r') as f:
-              lines = f.readlines()
+              content = f.read()
           
-          # Rewrite with corrections
-          new_lines = []
-          in_android_block = False
-          indent_level = 0
+          # Replace API levels - aggressive approach
+          content = re.sub(r'compileSdkVersion\s*=\s*\d+', 'compileSdkVersion = 35', content)
+          content = re.sub(r'targetSdkVersion\s*=\s*\d+', 'targetSdkVersion = 35', content)
+          content = re.sub(r'minSdkVersion\s*=\s*\d+', 'minSdkVersion = 24', content)
+          content = re.sub(r'versionCode\s+\d+', 'versionCode 2', content)
           
-          for line in lines:
-              # Replace SDK versions wherever they appear
-              if 'compileSdkVersion' in line:
-                  line = line.replace(line.split('=')[1].strip(), '35\n') if '=' in line else line
-                  new_lines.append('    compileSdkVersion = 35\n')
-                  continue
-              elif 'targetSdkVersion' in line:
-                  new_lines.append('    targetSdkVersion = 35\n')
-                  continue
-              elif 'versionCode' in line and 'versionCode' in line:
-                  new_lines.append('        versionCode 2\n')
-                  continue
-              
-              new_lines.append(line)
-          
-          # Write back
           with open(gradle_file, 'w') as f:
-              f.writelines(new_lines)
+              f.write(content)
           
-          print("✅ build.gradle updated")
-          print("\nUpdated lines:")
+          print("✅ Updated build.gradle")
+          print("\nVerifying:")
           with open(gradle_file, 'r') as f:
               for i, line in enumerate(f, 1):
-                  if any(x in line for x in ['compileSdk', 'targetSdk', 'versionCode']):
-                      print(f"{i}: {line.rstrip()}")
+                  if any(x in line for x in ['compileSdk', 'targetSdk', 'minSdk', 'versionCode']):
+                      print(f"  Line {i}: {line.rstrip()}")
           PYTHON_SCRIPT
-
-      - name: Verify build.gradle
-        run: |
-          echo "📋 Checking build.gradle content:"
-          grep -n "compileSdkVersion\|targetSdkVersion\|versionCode" android/app/build.gradle
 
       - name: Decode Keystore
         run: |
           mkdir -p android/app
           echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > android/app/keystore.jks
-          ls -lh android/app/keystore.jks
 
       - name: Make gradlew executable
         run: chmod +x android/gradlew
@@ -124,22 +98,11 @@ jobs:
         run: |
           cd android
           ./gradlew bundleRelease \
-            -x lint \
             -Pandroid.injected.signing.store.file=$(pwd)/app/keystore.jks \
             -Pandroid.injected.signing.store.password="${{ secrets.KEYSTORE_PASSWORD }}" \
             -Pandroid.injected.signing.key.alias="${{ secrets.KEY_ALIAS }}" \
             -Pandroid.injected.signing.key.password="${{ secrets.KEY_PASSWORD }}" \
             --stacktrace
-
-      - name: Verify API Level in AAB
-        run: |
-          cd android/app/build/outputs/bundle/release
-          
-          # Try to extract manifest
-          unzip -p app-release.aab base/manifest/AndroidManifest.xml > /tmp/manifest.bin 2>/dev/null || true
-          
-          echo "✅ App Bundle created:"
-          ls -lh app-release.aab
 
       - name: Upload App Bundle
         uses: actions/upload-artifact@v4
@@ -149,4 +112,4 @@ jobs:
           retention-days: 30
 
       - name: Build Success
-        run: echo "✅ Build complete with API Level 35!"
+        run: echo "✅ Build complete!"
