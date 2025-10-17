@@ -47,44 +47,74 @@ jobs:
           npx cap add android
           npx cap sync android
 
-      - name: Update Gradle properties globally
+      - name: Create custom build.gradle.kts
+        run: |
+          cat > android/app/build.gradle.kts << 'GRADLE'
+          plugins {
+              id("com.android.application")
+              kotlin("android")
+              kotlin("kapt")
+          }
+          
+          android {
+              namespace = "com.celestial.oracle"
+              compileSdk = 35
+              
+              defaultConfig {
+                  applicationId = "com.celestial.oracle"
+                  minSdk = 24
+                  targetSdk = 35
+                  versionCode = 2
+                  versionName = "1.0.1"
+              }
+              
+              buildTypes {
+                  release {
+                      isMinifyEnabled = false
+                  }
+              }
+              
+              compileOptions {
+                  sourceCompatibility = JavaVersion.VERSION_11
+                  targetCompatibility = JavaVersion.VERSION_11
+              }
+          }
+          
+          dependencies {
+              implementation("androidx.appcompat:appcompat:1.6.1")
+              implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+              implementation("com.google.android.material:material:1.9.0")
+          }
+          GRADLE
+          
+          echo "✅ Created build.gradle.kts with API 35"
+
+      - name: Backup and update build.gradle
+        run: |
+          BUILD_GRADLE="android/app/build.gradle"
+          
+          if [ -f "$BUILD_GRADLE" ]; then
+            # Create aggressive replacements
+            sed -i 's/compileSdkVersion.*/compileSdkVersion = 35/g' "$BUILD_GRADLE"
+            sed -i 's/targetSdkVersion.*/targetSdkVersion = 35/g' "$BUILD_GRADLE"
+            sed -i 's/minSdkVersion.*/minSdkVersion = 24/g' "$BUILD_GRADLE"
+            sed -i 's/versionCode [0-9]*/versionCode 2/g' "$BUILD_GRADLE"
+            sed -i 's/versionName.*/versionName = "1.0.1"/g' "$BUILD_GRADLE"
+            
+            echo "✅ Updated build.gradle"
+            grep -E "compileSdk|targetSdk|minSdk|versionCode|versionName" "$BUILD_GRADLE" | head -10
+          fi
+
+      - name: Create gradle.properties
         run: |
           cat > android/gradle.properties << 'EOF'
           org.gradle.jvmargs=-Xmx4096m
           android.useAndroidX=true
           android.enableJetifier=true
+          android.compileSdkVersion=35
+          android.targetSdkVersion=35
+          android.minSdkVersion=24
           EOF
-          
-          echo "✅ gradle.properties created"
-
-      - name: Update build.gradle with API 35
-        run: |
-          BUILD_GRADLE="android/app/build.gradle"
-          
-          python3 << 'PYTHON_SCRIPT'
-          import re
-          
-          gradle_file = "android/app/build.gradle"
-          
-          with open(gradle_file, 'r') as f:
-              content = f.read()
-          
-          # Replace API levels - aggressive approach
-          content = re.sub(r'compileSdkVersion\s*=\s*\d+', 'compileSdkVersion = 35', content)
-          content = re.sub(r'targetSdkVersion\s*=\s*\d+', 'targetSdkVersion = 35', content)
-          content = re.sub(r'minSdkVersion\s*=\s*\d+', 'minSdkVersion = 24', content)
-          content = re.sub(r'versionCode\s+\d+', 'versionCode 2', content)
-          
-          with open(gradle_file, 'w') as f:
-              f.write(content)
-          
-          print("✅ Updated build.gradle")
-          print("\nVerifying:")
-          with open(gradle_file, 'r') as f:
-              for i, line in enumerate(f, 1):
-                  if any(x in line for x in ['compileSdk', 'targetSdk', 'minSdk', 'versionCode']):
-                      print(f"  Line {i}: {line.rstrip()}")
-          PYTHON_SCRIPT
 
       - name: Decode Keystore
         run: |
@@ -112,4 +142,4 @@ jobs:
           retention-days: 30
 
       - name: Build Success
-        run: echo "✅ Build complete!"
+        run: echo "✅ Build complete with API Level 35!"
