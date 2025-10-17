@@ -55,52 +55,55 @@ jobs:
               kotlin("android")
               kotlin("kapt")
           }
-          
+
           android {
               namespace = "com.celestial.oracle"
               compileSdk = 35
-              
+
               defaultConfig {
                   applicationId = "com.celestial.oracle"
                   minSdk = 24
                   targetSdk = 35
-                  versionCode = 2
+                  versionCode = 4
                   versionName = "1.0.1"
               }
-              
+
               buildTypes {
                   release {
                       isMinifyEnabled = false
                   }
               }
-              
+
               compileOptions {
                   sourceCompatibility = JavaVersion.VERSION_11
                   targetCompatibility = JavaVersion.VERSION_11
               }
           }
-          
+
           dependencies {
               implementation("androidx.appcompat:appcompat:1.6.1")
               implementation("androidx.constraintlayout:constraintlayout:2.1.4")
               implementation("com.google.android.material:material:1.9.0")
           }
           GRADLE
-          
-          echo "✅ Created build.gradle.kts with API 35"
+
+          echo "✅ Created build.gradle.kts with versionCode 4"
 
       - name: Backup and update build.gradle
         run: |
           BUILD_GRADLE="android/app/build.gradle"
-          
+
           if [ -f "$BUILD_GRADLE" ]; then
-            # Create aggressive replacements
-            sed -i 's/compileSdkVersion.*/compileSdkVersion = 35/g' "$BUILD_GRADLE"
-            sed -i 's/targetSdkVersion.*/targetSdkVersion = 35/g' "$BUILD_GRADLE"
-            sed -i 's/minSdkVersion.*/minSdkVersion = 24/g' "$BUILD_GRADLE"
-            sed -i 's/versionCode [0-9]*/versionCode 2/g' "$BUILD_GRADLE"
-            sed -i 's/versionName.*/versionName = "1.0.1"/g' "$BUILD_GRADLE"
-            
+            # Read current versionCode from the file
+            CURRENT_VERSION=$(grep -oP 'versionCode \K[0-9]+' "$BUILD_GRADLE" | head -1)
+            echo "📌 Current version from build.gradle: $CURRENT_VERSION"
+
+            # Update only SDK versions, keep the versionCode from the file
+            sed -i 's/compileSdk.*/compileSdk 35/g' "$BUILD_GRADLE"
+            sed -i 's/targetSdk.*/targetSdk 35/g' "$BUILD_GRADLE"
+            sed -i 's/minSdk.*/minSdk 24/g' "$BUILD_GRADLE"
+            sed -i 's/versionName.*/versionName "1.0.1"/g' "$BUILD_GRADLE"
+
             echo "✅ Updated build.gradle"
             grep -E "compileSdk|targetSdk|minSdk|versionCode|versionName" "$BUILD_GRADLE" | head -10
           fi
@@ -137,9 +140,9 @@ jobs:
       - name: Upload App Bundle
         uses: actions/upload-artifact@v4
         with:
-          name: celestial-oracle-release-aab-v2
+          name: celestial-oracle-release-aab-v4
           path: android/app/build/outputs/bundle/release/app-release.aab
           retention-days: 30
 
       - name: Build Success
-        run: echo "✅ Build complete with API Level 35!"
+        run: echo "✅ Build complete with versionCode 4!"
