@@ -44,23 +44,31 @@ jobs:
           npx cap add android
           npx cap sync android
 
-      - name: Update Android build files
+      - name: Create local.properties with SDK versions
+        run: |
+          cat > android/local.properties << EOF
+          sdk.dir=$ANDROID_HOME
+          org.gradle.jvmargs=-Xmx4096m
+          EOF
+
+      - name: Fix Android build.gradle with Perl
         run: |
           BUILD_GRADLE="android/app/build.gradle"
           
-          echo "🔧 Updating build.gradle..."
+          echo "📝 Original build.gradle (first 30 lines):"
+          head -30 "$BUILD_GRADLE"
           
-          # Update compileSdkVersion to 35
-          sed -i 's/compileSdkVersion = [0-9]*/compileSdkVersion = 35/g' "$BUILD_GRADLE"
+          echo ""
+          echo "🔧 Updating versions..."
           
-          # Update targetSdkVersion to 35
-          sed -i 's/targetSdkVersion = [0-9]*/targetSdkVersion = 35/g' "$BUILD_GRADLE"
+          # Use Perl for more reliable replacements
+          perl -i -pe 's/compileSdkVersion = \d+/compileSdkVersion = 35/g' "$BUILD_GRADLE"
+          perl -i -pe 's/targetSdkVersion = \d+/targetSdkVersion = 35/g' "$BUILD_GRADLE"
+          perl -i -pe 's/versionCode \d+/versionCode 2/g' "$BUILD_GRADLE"
           
-          # Update versionCode to 2
-          sed -i 's/versionCode [0-9]*/versionCode 2/g' "$BUILD_GRADLE"
-          
-          echo "✅ Build configuration updated:"
-          grep -E "compileSdkVersion|targetSdkVersion|versionCode" "$BUILD_GRADLE" | head -5
+          echo ""
+          echo "✅ Updated build.gradle:"
+          grep -n "compileSdkVersion\|targetSdkVersion\|versionCode" "$BUILD_GRADLE" | head -10
 
       - name: Decode Keystore
         run: |
@@ -75,6 +83,9 @@ jobs:
         run: |
           cd android
           ./gradlew bundleRelease \
+            -PcompileSdkVersion=35 \
+            -PtargetSdkVersion=35 \
+            -PversionCode=2 \
             -Pandroid.injected.signing.store.file=$(pwd)/app/keystore.jks \
             -Pandroid.injected.signing.store.password="${{ secrets.KEYSTORE_PASSWORD }}" \
             -Pandroid.injected.signing.key.alias="${{ secrets.KEY_ALIAS }}" \
