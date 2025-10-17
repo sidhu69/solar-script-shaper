@@ -7,14 +7,6 @@ const config: CapacitorConfig = {
   server: {
     androidScheme: 'https'
   },
-  android: {
-    buildOptions: {
-      packageType: 'bundle',
-      compileSdkVersion: 35,
-      targetSdkVersion: 35,
-      minSdkVersion: 24
-    }
-  },
   plugins: {
     AdMob: {
       appId: 'ca-app-pub-3375938019790298~8473700666',
