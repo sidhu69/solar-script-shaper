@@ -9,7 +9,10 @@ const config: CapacitorConfig = {
   },
   android: {
     buildOptions: {
-      packageType: 'bundle'
+      packageType: 'bundle',
+      compileSdkVersion: 35,
+      targetSdkVersion: 35,
+      minSdkVersion: 24
     }
   },
   plugins: {
