@@ -1,4 +1,4 @@
-name: Build Android APK
+name: Build Android App Bundle
 run-name: Build Celestial Oracle Android App 🚀
 
 on:
@@ -9,111 +9,137 @@ on:
 
 jobs:
   build:
-    name: Build Android APK
+    name: Build Android App Bundle
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout repo
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 2. Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      # 3. Setup Java
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '21'
 
-      # 4. Setup Android SDK
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
+        with:
+          accept-android-sdk-licenses: true
+          packages: 'platforms;android-35 build-tools;35.0.0'
 
-      # 5. Install dependencies
       - name: Install dependencies
         run: npm install
 
-      # 5. Build Vite app
       - name: Build Vite app
         run: npm run build
 
-      # 6. Verify Capacitor Config
-      - name: Verify Capacitor Config
-        run: |
-          echo "✅ Using existing capacitor.config.ts"
-          cat capacitor.config.ts
+      - name: Remove old Android folder
+        run: rm -rf android || true
 
-      # 7. Add Android platform
       - name: Add Android platform
         run: |
-          npx cap add android || echo "Android already added"
+          npx cap add android
           npx cap sync android
-      
-      # 8. Add Google Play Services for AdMob
-      - name: Add Google Play Services
+
+      - name: Create custom build.gradle.kts
+        run: |
+          cat > android/app/build.gradle.kts << 'GRADLE'
+          plugins {
+              id("com.android.application")
+              kotlin("android")
+              kotlin("kapt")
+          }
+          
+          android {
+              namespace = "com.celestial.oracle"
+              compileSdk = 35
+              
+              defaultConfig {
+                  applicationId = "com.celestial.oracle"
+                  minSdk = 24
+                  targetSdk = 35
+                  versionCode = 2
+                  versionName = "1.0.1"
+              }
+              
+              buildTypes {
+                  release {
+                      isMinifyEnabled = false
+                  }
+              }
+              
+              compileOptions {
+                  sourceCompatibility = JavaVersion.VERSION_11
+                  targetCompatibility = JavaVersion.VERSION_11
+              }
+          }
+          
+          dependencies {
+              implementation("androidx.appcompat:appcompat:1.6.1")
+              implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+              implementation("com.google.android.material:material:1.9.0")
+          }
+          GRADLE
+          
+          echo "✅ Created build.gradle.kts with API 35"
+
+      - name: Backup and update build.gradle
         run: |
           BUILD_GRADLE="android/app/build.gradle"
-          if ! grep -q "play-services-ads" "$BUILD_GRADLE"; then
-            sed -i '/dependencies {/a\    implementation '\''com.google.android.gms:play-services-ads:22.6.0'\''' "$BUILD_GRADLE"
-            echo "✅ Google Play Services added"
-          else
-            echo "✅ Google Play Services already present"
-          fi
           
-      # 9. Configure AdMob in AndroidManifest
-      - name: Configure AdMob in AndroidManifest
-        run: |
-          MANIFEST="android/app/src/main/AndroidManifest.xml"
-          
-          if ! grep -q "com.google.android.gms.ads.APPLICATION_ID" "$MANIFEST"; then
-            sed -i '/<application.*>/a\        <meta-data android:name="com.google.android.gms.ads.APPLICATION_ID" android:value="ca-app-pub-3375938019790298~8473700663" />' "$MANIFEST"
-            echo "✅ AdMob configured"
-          else
-            echo "✅ AdMob already configured"
+          if [ -f "$BUILD_GRADLE" ]; then
+            # Create aggressive replacements
+            sed -i 's/compileSdkVersion.*/compileSdkVersion = 35/g' "$BUILD_GRADLE"
+            sed -i 's/targetSdkVersion.*/targetSdkVersion = 35/g' "$BUILD_GRADLE"
+            sed -i 's/minSdkVersion.*/minSdkVersion = 24/g' "$BUILD_GRADLE"
+            sed -i 's/versionCode [0-9]*/versionCode 2/g' "$BUILD_GRADLE"
+            sed -i 's/versionName.*/versionName = "1.0.1"/g' "$BUILD_GRADLE"
+            
+            echo "✅ Updated build.gradle"
+            grep -E "compileSdk|targetSdk|minSdk|versionCode|versionName" "$BUILD_GRADLE" | head -10
           fi
-          head -30 "$MANIFEST"
 
-      # 10. Replace Android icons
-      - name: Replace Android icons
+      - name: Create gradle.properties
         run: |
-          mkdir -p android/app/src/main/res/mipmap-mdpi
-          mkdir -p android/app/src/main/res/mipmap-hdpi
-          mkdir -p android/app/src/main/res/mipmap-xhdpi
-          mkdir -p android/app/src/main/res/mipmap-xxhdpi
-          mkdir -p android/app/src/main/res/mipmap-xxxhdpi
-          cp resources/icon.png android/app/src/main/res/mipmap-mdpi/ic_launcher.png
-          cp resources/icon.png android/app/src/main/res/mipmap-mdpi/ic_launcher_round.png
-          cp resources/icon.png android/app/src/main/res/mipmap-hdpi/ic_launcher.png
-          cp resources/icon.png android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png
-          cp resources/icon.png android/app/src/main/res/mipmap-xhdpi/ic_launcher.png
-          cp resources/icon.png android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png
-          cp resources/icon.png android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png
-          cp resources/icon.png android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png
-          cp resources/icon.png android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
-          cp resources/icon.png android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png
+          cat > android/gradle.properties << 'EOF'
+          org.gradle.jvmargs=-Xmx4096m
+          android.useAndroidX=true
+          android.enableJetifier=true
+          android.compileSdkVersion=35
+          android.targetSdkVersion=35
+          android.minSdkVersion=24
+          EOF
 
-      # 11. Make gradlew executable
+      - name: Decode Keystore
+        run: |
+          mkdir -p android/app
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > android/app/keystore.jks
+
       - name: Make gradlew executable
+        run: chmod +x android/gradlew
+
+      - name: Build App Bundle
         run: |
-          if [ -f android/gradlew ]; then
-            chmod +x android/gradlew
-          else
-            echo "gradlew not found after Capacitor sync"; ls -la android || true; exit 1
-          fi
+          cd android
+          ./gradlew bundleRelease \
+            -Pandroid.injected.signing.store.file=$(pwd)/app/keystore.jks \
+            -Pandroid.injected.signing.store.password="${{ secrets.KEYSTORE_PASSWORD }}" \
+            -Pandroid.injected.signing.key.alias="${{ secrets.KEY_ALIAS }}" \
+            -Pandroid.injected.signing.key.password="${{ secrets.KEY_PASSWORD }}" \
+            --stacktrace
 
-      # 12. Build debug APK
-      - name: Build debug APK
-        run: cd android && ./gradlew assembleDebug --stacktrace
-
-      # 13. Upload APK
-      - name: Upload APK
+      - name: Upload App Bundle
         uses: actions/upload-artifact@v4
         with:
-          name: celestial-oracle-debug-apk
-          path: android/app/build/outputs/apk/debug/app-debug.apk
-          retention-days: 14
+          name: celestial-oracle-release-aab-v2
+          path: android/app/build/outputs/bundle/release/app-release.aab
+          retention-days: 30
+
+      - name: Build Success
+        run: echo "✅ Build complete with API Level 35!"
