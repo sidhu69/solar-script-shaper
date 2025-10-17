@@ -48,18 +48,32 @@ jobs:
           npx cap add android || echo "Android already added"
           npx cap sync android
 
-      # 8. Decode and setup keystore
+      # 8. Update API Levels to 35
+      - name: Update API Levels
+        run: |
+          BUILD_GRADLE="android/app/build.gradle"
+          
+          # Update compileSdkVersion to 35
+          sed -i 's/compileSdkVersion = .*/compileSdkVersion = 35/g' "$BUILD_GRADLE"
+          
+          # Update targetSdkVersion to 35
+          sed -i 's/targetSdkVersion = .*/targetSdkVersion = 35/g' "$BUILD_GRADLE"
+          
+          echo "✅ API levels updated to 35"
+          grep -i "sdkversion" "$BUILD_GRADLE" || echo "Checking build.gradle..."
+
+      # 9. Decode and setup keystore
       - name: Decode Keystore
         run: |
           mkdir -p android/app
           echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > android/app/keystore.jks
           ls -lh android/app/keystore.jks
 
-      # 9. Make gradlew executable
+      # 10. Make gradlew executable
       - name: Make gradlew executable
         run: chmod +x android/gradlew
 
-      # 10. Build App Bundle (AAB)
+      # 11. Build App Bundle (AAB)
       - name: Build App Bundle
         run: |
           cd android
@@ -70,7 +84,7 @@ jobs:
             -Pandroid.injected.signing.key.password="${{ secrets.KEY_PASSWORD }}" \
             --stacktrace
 
-      # 11. Upload App Bundle as artifact
+      # 12. Upload App Bundle as artifact
       - name: Upload App Bundle
         uses: actions/upload-artifact@v4
         with:
@@ -78,6 +92,6 @@ jobs:
           path: android/app/build/outputs/bundle/release/app-release.aab
           retention-days: 30
 
-      # 12. Display success message
+      # 13. Display success message
       - name: Build Success
         run: echo "✅ App Bundle built successfully! Download from artifacts."
