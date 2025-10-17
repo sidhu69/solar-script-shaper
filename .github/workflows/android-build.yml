@@ -62,6 +62,16 @@ jobs:
           echo "✅ API levels updated to 35"
           grep -i "sdkversion" "$BUILD_GRADLE" || echo "Checking build.gradle..."
 
+      # 8.5. Update Version Code to 2
+      - name: Update Version Code
+        run: |
+          BUILD_GRADLE="android/app/build.gradle"
+          
+          # Update versionCode to 2
+          sed -i 's/versionCode = .*/versionCode = 2/g' "$BUILD_GRADLE"
+          
+          echo "✅ Version code updated to 2"
+
       # 9. Decode and setup keystore
       - name: Decode Keystore
         run: |
