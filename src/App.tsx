@@ -1,16 +1,24 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
+import { Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { SplashScreen } from "@/components/SplashScreen";
 import { AdMobService } from "@/services/admob";
-import Index from "./pages/Index";
-import AstrologyView from "./pages/AstrologyView";
-import NotFound from "./pages/NotFound";
 
-const queryClient = new QueryClient();
+// Lazy load heavy pages
+const Index = lazy(() => import("./pages/Index"));
+const AstrologyView = lazy(() => import("./pages/AstrologyView"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5, // 5 minutes
+    },
+  },
+});
 
 const App = () => {
   const [showSplash, setShowSplash] = useState(true);
@@ -31,12 +39,13 @@ const App = () => {
           <SplashScreen onComplete={() => setShowSplash(false)} />
         ) : (
           <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/astrology" element={<AstrologyView />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+            <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading...</div>}>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/astrology" element={<AstrologyView />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Suspense>
           </BrowserRouter>
         )}
       </TooltipProvider>
