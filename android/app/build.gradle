@@ -7,8 +7,8 @@ android {
         applicationId "com.celestial.oracle"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 10
-        versionName "1.0.3"
+        versionCode 19
+        versionName "1.0.7"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         
         // Enable MultiDex to handle large number of methods
