@@ -72,8 +72,8 @@ jobs:
           BUILD_GRADLE="android/app/build.gradle"
           
           # Force versionCode 16 and versionName 1.0.4
-          sed -i 's/versionCode [0-9]*/versionCode 16/g' "$BUILD_GRADLE"
-          sed -i 's/versionName "[^"]*"/versionName "1.0.4"/g' "$BUILD_GRADLE"
+          sed -i 's/versionCode [0-9]*/versionCode 17/g' "$BUILD_GRADLE"
+          sed -i 's/versionName "[^"]*"/versionName "1.0.5"/g' "$BUILD_GRADLE"
           
           echo "✅ Updated build.gradle to versionCode 16"
           grep -E "versionCode|versionName" "$BUILD_GRADLE" | head -5
@@ -123,7 +123,7 @@ jobs:
       - name: Upload App Bundle
         uses: actions/upload-artifact@v4
         with:
-          name: celestial-oracle-release-aab-v16
+          name: celestial-oracle-release-aab-v17
           path: android/app/build/outputs/bundle/release/app-release.aab
           retention-days: 30
 
