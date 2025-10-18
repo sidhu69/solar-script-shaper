@@ -1,4 +1,4 @@
-name: Android Build v19 - OOM Fix
+name: Android Build v19 - NDK Fix
 
 on:
   push:
@@ -24,6 +24,15 @@ jobs:
       with:
         distribution: 'temurin'
         java-version: '17'
+
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v3
+
+    - name: Install Android NDK
+      run: |
+        echo "Installing Android NDK..."
+        sdkmanager --install "ndk;26.1.10909125"
+        echo "NDK installed successfully!"
 
     - name: Install dependencies
       run: npm ci
@@ -67,7 +76,7 @@ jobs:
         echo "$KEYSTORE_BASE64" | base64 -d > android/app/release.keystore
         echo "Keystore decoded successfully!"
 
-    - name: Build Android Release AAB with R8 optimization
+    - name: Build Android Release AAB
       env:
         KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
         KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
@@ -75,18 +84,17 @@ jobs:
       run: |
         cd android
         
-        echo "Building release AAB with R8 minification and resource shrinking..."
+        echo "Building release AAB..."
         
         # Set Gradle options for better performance
-        export GRADLE_OPTS="-Xmx4096m -XX:MaxMetaspaceSize=512m -XX:+HeapDumpOnOutOfMemoryError"
+        export GRADLE_OPTS="-Xmx4096m -XX:MaxMetaspaceSize=512m"
         
         ./gradlew bundleRelease \
           -Pandroid.injected.signing.store.file=$(pwd)/app/release.keystore \
           -Pandroid.injected.signing.store.password=$KEYSTORE_PASSWORD \
           -Pandroid.injected.signing.key.alias=$KEY_ALIAS \
           -Pandroid.injected.signing.key.password=$KEY_PASSWORD \
-          --stacktrace \
-          --info
+          --stacktrace
 
     - name: Verify AAB was created
       run: |
@@ -106,14 +114,6 @@ jobs:
         retention-days: 30
         if-no-files-found: error
 
-    - name: Upload ProGuard mapping file
-      uses: actions/upload-artifact@v4
-      with:
-        name: proguard-mapping-v19
-        path: android/app/build/outputs/mapping/release/mapping.txt
-        retention-days: 90
-        if-no-files-found: warn
-
     - name: Build summary
       run: |
         echo "## 🚀 Build Complete - Version 19 (1.0.7)" >> $GITHUB_STEP_SUMMARY
@@ -122,11 +122,10 @@ jobs:
         echo "- **AAB File**: app-release.aab" >> $GITHUB_STEP_SUMMARY
         echo "- **Size**: $(ls -lh android/app/build/outputs/bundle/release/app-release.aab | awk '{print $5}')" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
-        echo "### ✨ Optimizations Applied:" >> $GITHUB_STEP_SUMMARY
-        echo "- ✅ R8 code shrinking enabled" >> $GITHUB_STEP_SUMMARY
-        echo "- ✅ Resource shrinking enabled" >> $GITHUB_STEP_SUMMARY
-        echo "- ✅ MultiDex enabled" >> $GITHUB_STEP_SUMMARY
-        echo "- ✅ 4GB heap size for builds" >> $GITHUB_STEP_SUMMARY
+        echo "### ✨ Fixes Applied:" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ Android NDK 26.1 installed" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ MultiDex enabled for large bundle" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ largeHeap enabled for RAM optimization" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "### 📱 Next Steps:" >> $GITHUB_STEP_SUMMARY
         echo "1. Download the AAB from Actions artifacts" >> $GITHUB_STEP_SUMMARY
