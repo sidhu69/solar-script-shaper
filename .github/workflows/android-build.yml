@@ -1,4 +1,4 @@
-name: Android Build v19 - NDK Fix
+name: Android Build v20 - Fixed Icon
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -37,20 +37,26 @@ jobs:
     - name: Install dependencies
       run: npm ci
 
-    - name: Update version to 19
+    - name: Update version to 20
       run: |
-        echo "Updating version to 19 (1.0.7)..."
-        
+        echo "Updating version to 20 (1.0.8)..."
+
         # Update package.json
-        sed -i 's/"version": ".*"/"version": "1.0.7"/' package.json
-        
+        sed -i 's/"version": ".*"/"version": "1.0.8"/' package.json
+
         # Update build.gradle versionCode and versionName
-        sed -i 's/versionCode [0-9]*/versionCode 19/' android/app/build.gradle
-        sed -i 's/versionName ".*"/versionName "1.0.7"/' android/app/build.gradle
-        sed -i 's/versionCodeOverride = [0-9]*/versionCodeOverride = 19/' android/app/build.gradle
-        
+        sed -i 's/versionCode [0-9]*/versionCode 20/' android/app/build.gradle
+        sed -i 's/versionName ".*"/versionName "1.0.8"/' android/app/build.gradle
+        sed -i 's/versionCodeOverride = [0-9]*/versionCodeOverride = 20/' android/app/build.gradle
+
         echo "Version updated successfully!"
-        grep -A 5 "defaultConfig" android/app/build.gradle | grep -E "versionCode|versionName"
+
+    - name: Generate app icons from resources/icon.png
+      run: |
+        echo "Generating Android icons from resources/icon.png..."
+        npm install -g @capacitor/assets
+        npx @capacitor/assets generate --android
+        echo "Icons generated successfully!"
 
     - name: Build optimized React app
       run: npm run build
@@ -59,6 +65,13 @@ jobs:
 
     - name: Sync Capacitor
       run: npx cap sync android
+
+    - name: Verify icons were generated
+      run: |
+        echo "Checking if icons were generated..."
+        ls -lh android/app/src/main/res/mipmap-hdpi/ic_launcher.png
+        ls -lh android/app/src/main/res/mipmap-xhdpi/ic_launcher.png
+        ls -lh android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png
 
     - name: Verify AdMob configuration
       run: |
@@ -83,12 +96,12 @@ jobs:
         KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
       run: |
         cd android
-        
-        echo "Building release AAB..."
-        
+
+        echo "Building release AAB with custom icon..."
+
         # Set Gradle options for better performance
         export GRADLE_OPTS="-Xmx4096m -XX:MaxMetaspaceSize=512m"
-        
+
         ./gradlew bundleRelease \
           -Pandroid.injected.signing.store.file=$(pwd)/app/release.keystore \
           -Pandroid.injected.signing.store.password=$KEYSTORE_PASSWORD \
@@ -99,7 +112,7 @@ jobs:
     - name: Verify AAB was created
       run: |
         if [ -f "android/app/build/outputs/bundle/release/app-release.aab" ]; then
-          echo "✅ AAB created successfully!"
+          echo "✅ AAB created successfully with custom icon!"
           ls -lh android/app/build/outputs/bundle/release/app-release.aab
         else
           echo "❌ AAB not found!"
@@ -109,25 +122,21 @@ jobs:
     - name: Upload AAB artifact
       uses: actions/upload-artifact@v4
       with:
-        name: cosmic-astrology-v19-release
+        name: cosmic-astrology-v20-custom-icon
         path: android/app/build/outputs/bundle/release/app-release.aab
         retention-days: 30
         if-no-files-found: error
 
     - name: Build summary
       run: |
-        echo "## 🚀 Build Complete - Version 19 (1.0.7)" >> $GITHUB_STEP_SUMMARY
+        echo "## 🚀 Build Complete - Version 20 (1.0.8)" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "### 📦 Build Artifacts:" >> $GITHUB_STEP_SUMMARY
         echo "- **AAB File**: app-release.aab" >> $GITHUB_STEP_SUMMARY
         echo "- **Size**: $(ls -lh android/app/build/outputs/bundle/release/app-release.aab | awk '{print $5}')" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
-        echo "### ✨ Fixes Applied:" >> $GITHUB_STEP_SUMMARY
+        echo "### ✨ Changes in v20:" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ Custom app icon generated from resources/icon.png" >> $GITHUB_STEP_SUMMARY
         echo "- ✅ Android NDK 26.1 installed" >> $GITHUB_STEP_SUMMARY
         echo "- ✅ MultiDex enabled for large bundle" >> $GITHUB_STEP_SUMMARY
         echo "- ✅ largeHeap enabled for RAM optimization" >> $GITHUB_STEP_SUMMARY
-        echo "" >> $GITHUB_STEP_SUMMARY
-        echo "### 📱 Next Steps:" >> $GITHUB_STEP_SUMMARY
-        echo "1. Download the AAB from Actions artifacts" >> $GITHUB_STEP_SUMMARY
-        echo "2. Upload to Google Play Internal Testing" >> $GITHUB_STEP_SUMMARY
-        echo "3. Test on device to verify OOM fix" >> $GITHUB_STEP_SUMMARY
