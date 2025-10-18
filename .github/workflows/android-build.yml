@@ -43,70 +43,48 @@ jobs:
         run: rm -rf android || true
 
       - name: Add Android platform
+        run: npx cap add android
+
+      - name: Update variables.gradle BEFORE sync
         run: |
-          npx cap add android
-          npx cap sync android
-
-      - name: Create custom build.gradle.kts
-        run: |
-          cat > android/app/build.gradle.kts << 'GRADLE'
-          plugins {
-              id("com.android.application")
-              kotlin("android")
-              kotlin("kapt")
+          cat > android/variables.gradle << 'EOF'
+          ext {
+              minSdkVersion = 24
+              compileSdkVersion = 35
+              targetSdkVersion = 35
+              androidxActivityVersion = '1.8.0'
+              androidxAppCompatVersion = '1.6.1'
+              androidxCoordinatorLayoutVersion = '1.2.0'
+              androidxCoreVersion = '1.12.0'
+              androidxFragmentVersion = '1.6.2'
+              coreSplashScreenVersion = '1.0.1'
+              androidxWebkitVersion = '1.9.0'
+              junitVersion = '4.13.2'
+              androidxJunitVersion = '1.1.5'
+              androidxEspressoCoreVersion = '3.5.1'
+              cordovaAndroidVersion = '10.1.1'
           }
+          EOF
+          echo "✅ Updated variables.gradle"
 
-          android {
-              namespace = "com.celestial.oracle"
-              compileSdk = 35
-
-              defaultConfig {
-                  applicationId = "com.celestial.oracle"
-                  minSdk = 24
-                  targetSdk = 35
-                  versionCode = 4
-                  versionName = "1.0.1"
-              }
-
-              buildTypes {
-                  release {
-                      isMinifyEnabled = false
-                  }
-              }
-
-              compileOptions {
-                  sourceCompatibility = JavaVersion.VERSION_11
-                  targetCompatibility = JavaVersion.VERSION_11
-              }
-          }
-
-          dependencies {
-              implementation("androidx.appcompat:appcompat:1.6.1")
-              implementation("androidx.constraintlayout:constraintlayout:2.1.4")
-              implementation("com.google.android.material:material:1.9.0")
-          }
-          GRADLE
-
-          echo "✅ Created build.gradle.kts with versionCode 4"
-
-      - name: Backup and update build.gradle
+      - name: Update build.gradle versionCode BEFORE sync
         run: |
           BUILD_GRADLE="android/app/build.gradle"
+          
+          # Force versionCode 16 and versionName 1.0.4
+          sed -i 's/versionCode [0-9]*/versionCode 16/g' "$BUILD_GRADLE"
+          sed -i 's/versionName "[^"]*"/versionName "1.0.4"/g' "$BUILD_GRADLE"
+          
+          echo "✅ Updated build.gradle to versionCode 16"
+          grep -E "versionCode|versionName" "$BUILD_GRADLE" | head -5
 
-          if [ -f "$BUILD_GRADLE" ]; then
-            # Read current versionCode from the file
-            CURRENT_VERSION=$(grep -oP 'versionCode \K[0-9]+' "$BUILD_GRADLE" | head -1)
-            echo "📌 Current version from build.gradle: $CURRENT_VERSION"
+      - name: Sync Capacitor
+        run: npx cap sync android
 
-            # Update only SDK versions, keep the versionCode from the file
-            sed -i 's/compileSdk.*/compileSdk 35/g' "$BUILD_GRADLE"
-            sed -i 's/targetSdk.*/targetSdk 35/g' "$BUILD_GRADLE"
-            sed -i 's/minSdk.*/minSdk 24/g' "$BUILD_GRADLE"
-            sed -i 's/versionName.*/versionName "1.0.1"/g' "$BUILD_GRADLE"
-
-            echo "✅ Updated build.gradle"
-            grep -E "compileSdk|targetSdk|minSdk|versionCode|versionName" "$BUILD_GRADLE" | head -10
-          fi
+      - name: Verify build.gradle after sync
+        run: |
+          echo "📋 Checking build.gradle after sync:"
+          grep -E "versionCode|versionName" android/app/build.gradle | head -5
 
       - name: Create gradle.properties
         run: |
@@ -127,6 +105,11 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x android/gradlew
 
+      - name: Clean build
+        run: |
+          cd android
+          ./gradlew clean
+
       - name: Build App Bundle
         run: |
           cd android
@@ -140,9 +123,9 @@ jobs:
       - name: Upload App Bundle
         uses: actions/upload-artifact@v4
         with:
-          name: celestial-oracle-release-aab-v4
+          name: celestial-oracle-release-aab-v16
           path: android/app/build/outputs/bundle/release/app-release.aab
           retention-days: 30
 
       - name: Build Success
-        run: echo "✅ Build complete with versionCode 4!"
+        run: echo "✅ Build complete with versionCode 16!"
