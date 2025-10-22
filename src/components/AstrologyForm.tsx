@@ -43,6 +43,14 @@ export const AstrologyForm = ({ onLoading }: AstrologyFormProps) => {
     onLoading(true);
 
     try {
+      console.log("🚀 Starting astrology calculation...", {
+        birthDate,
+        birthTime,
+        birthPlace,
+        systemType,
+        language,
+      });
+
       const { data, error } = await supabase.functions.invoke("astrology-calculator", {
         body: {
           birthDate,
@@ -53,18 +61,58 @@ export const AstrologyForm = ({ onLoading }: AstrologyFormProps) => {
         },
       });
 
-      if (error) throw error;
+      console.log("📡 Supabase response:", { data, error });
 
+      if (error) {
+        console.error("❌ Supabase error details:", {
+          message: error.message,
+          status: error.status,
+          statusText: error.statusText,
+          context: error.context,
+        });
+        throw error;
+      }
+
+      if (!data) {
+        throw new Error("No data returned from calculator");
+      }
+
+      console.log("✅ Report generated successfully");
       navigate("/astrology", { state: { reportData: data } });
       toast({
         title: "✨ Report Generated",
         description: "Your cosmic blueprint has been revealed!",
       });
-    } catch (error) {
-      console.error("Error generating report:", error);
+    } catch (error: any) {
+      console.error("💥 Full error object:", error);
+      
+      let errorMessage = "Failed to generate astrological report. Please try again.";
+      let errorDetails = "";
+
+      if (error.message) {
+        errorDetails = error.message;
+      }
+
+      if (error.status === 404) {
+        errorMessage = "Edge function not found. Please contact support.";
+        errorDetails = "The astrology-calculator function is not deployed.";
+      } else if (error.status === 500) {
+        errorMessage = "Server error occurred.";
+        errorDetails = error.message || "Internal server error";
+      } else if (error.message?.includes("Failed to fetch") || error.message?.includes("network")) {
+        errorMessage = "Network error. Check your internet connection.";
+        errorDetails = "Cannot reach the server";
+      }
+
+      console.error("🔴 ERROR SUMMARY:", {
+        message: errorMessage,
+        details: errorDetails,
+        fullError: error,
+      });
+
       toast({
         title: "Error",
-        description: "Failed to generate astrological report. Please try again.",
+        description: errorDetails ? `${errorMessage}\n\nDetails: ${errorDetails}` : errorMessage,
         variant: "destructive",
       });
     } finally {

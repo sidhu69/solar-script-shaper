@@ -42,6 +42,8 @@ export const AstrologyChat = ({ birthChart, language }: AstrologyChatProps) => {
     setIsLoading(true);
 
     try {
+      console.log("💬 Sending chat message to:", CHAT_URL);
+      
       const response = await fetch(CHAT_URL, {
         method: "POST",
         headers: {
@@ -55,6 +57,14 @@ export const AstrologyChat = ({ birthChart, language }: AstrologyChatProps) => {
         }),
       });
 
+      console.log("📡 Chat response status:", response.status);
+
+      if (response.status === 404) {
+        toast.error("Chat function not found. Edge function not deployed.");
+        setIsLoading(false);
+        return;
+      }
+
       if (response.status === 429) {
         toast.error("Too many requests. Please wait a moment and try again.");
         setIsLoading(false);
@@ -67,8 +77,18 @@ export const AstrologyChat = ({ birthChart, language }: AstrologyChatProps) => {
         return;
       }
 
+      if (response.status === 500) {
+        const errorText = await response.text();
+        console.error("❌ Server error:", errorText);
+        toast.error(`Server error: ${errorText.substring(0, 100)}`);
+        setIsLoading(false);
+        return;
+      }
+
       if (!response.ok || !response.body) {
-        throw new Error("Failed to get response");
+        const errorText = await response.text();
+        console.error("❌ Response not OK:", errorText);
+        throw new Error(`Failed to get response: ${response.status} - ${errorText}`);
       }
 
       const reader = response.body.getReader();
@@ -122,9 +142,22 @@ export const AstrologyChat = ({ birthChart, language }: AstrologyChatProps) => {
       }
 
       setIsLoading(false);
-    } catch (error) {
-      console.error("Chat error:", error);
-      toast.error("Failed to get response. Please try again.");
+    } catch (error: any) {
+      console.error("💥 Chat error details:", {
+        message: error.message,
+        stack: error.stack,
+        error: error,
+      });
+
+      let errorMsg = "Failed to get response. Please try again.";
+      
+      if (error.message?.includes("Failed to fetch")) {
+        errorMsg = "Network error. Cannot reach chat server. Check your internet connection.";
+      } else if (error.message?.includes("GOOGLE_GEMINI_API_KEY")) {
+        errorMsg = "Gemini API key not configured in backend.";
+      }
+
+      toast.error(errorMsg);
       setIsLoading(false);
     }
   };
