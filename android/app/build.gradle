@@ -8,8 +8,8 @@ android {
         applicationId "com.celestial.oracle"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 19
-        versionName "1.0.7"
+        versionCode 21
+        versionName "1.0.9"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         
         multiDexEnabled true
@@ -60,6 +60,6 @@ try {
 
 android.applicationVariants.all { variant ->
     variant.outputs.all { output ->
-        output.versionCodeOverride = 19
+        output.versionCodeOverride = 21
     }
 }
