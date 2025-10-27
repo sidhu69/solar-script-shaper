@@ -49,6 +49,8 @@ export const AstrologyForm = ({ onLoading }: AstrologyFormProps) => {
         birthPlace,
         systemType,
         language,
+        supabaseUrl: import.meta.env.VITE_SUPABASE_URL,
+        hasSupabaseKey: !!import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
       });
 
       const { data, error } = await supabase.functions.invoke("astrology-calculator", {
@@ -66,9 +68,11 @@ export const AstrologyForm = ({ onLoading }: AstrologyFormProps) => {
       if (error) {
         console.error("❌ Supabase error details:", {
           message: error.message,
+          name: error.name,
           status: error.status,
           statusText: error.statusText,
           context: error.context,
+          stack: error.stack,
         });
         throw error;
       }
