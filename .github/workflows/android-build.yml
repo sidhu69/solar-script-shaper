@@ -1,4 +1,4 @@
-name: Android Build v23 - Fixed Icon
+name: Android Build v24 - Fixed Icon
 
 on:
   push:
@@ -37,17 +37,17 @@ jobs:
     - name: Install dependencies
       run: npm ci
 
-    - name: Update version to 23
+    - name: Update version to 24
       run: |
-        echo "Updating version to 22 (1.0.11)..."
+        echo "Updating version to 24 (1.0.12)..."
 
         # Update package.json
-        sed -i 's/"version": ".*"/"version": "1.0.11"/' package.json
+        sed -i 's/"version": ".*"/"version": "1.0.12"/' package.json
 
         # Update build.gradle versionCode and versionName
-        sed -i 's/versionCode [0-9]*/versionCode 23/' android/app/build.gradle
-        sed -i 's/versionName ".*"/versionName "1.0.11"/' android/app/build.gradle
-        sed -i 's/versionCodeOverride = [0-9]*/versionCodeOverride = 23/' android/app/build.gradle
+        sed -i 's/versionCode [0-9]*/versionCode 24/' android/app/build.gradle
+        sed -i 's/versionName ".*"/versionName "1.0.12"/' android/app/build.gradle
+        sed -i 's/versionCodeOverride = [0-9]*/versionCodeOverride = 24/' android/app/build.gradle
 
         echo "Version updated successfully!"
 
@@ -122,14 +122,14 @@ jobs:
     - name: Upload AAB artifact
       uses: actions/upload-artifact@v4
       with:
-        name: cosmic-astrology-v23-custom-icon
+        name: cosmic-astrology-v24-custom-icon
         path: android/app/build/outputs/bundle/release/app-release.aab
         retention-days: 30
         if-no-files-found: error
 
     - name: Build summary
       run: |
-        echo "## 🚀 Build Complete - Version 23 (1.0.11)" >> $GITHUB_STEP_SUMMARY
+        echo "## 🚀 Build Complete - Version 24 (1.0.12)" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "### 📦 Build Artifacts:" >> $GITHUB_STEP_SUMMARY
         echo "- **AAB File**: app-release.aab" >> $GITHUB_STEP_SUMMARY
