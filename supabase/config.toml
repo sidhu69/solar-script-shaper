@@ -1,7 +1,1 @@
-project_id = "bvspizhmtdsmibmmkdlw"
-
-[functions.astrology-calculator]
-verify_jwt = false
-
-[functions.astrology-chat]
-verify_jwt = false
+project_id = "jzzestgyrqnpfyrwqqww"
