@@ -39,7 +39,7 @@ serve(async (req) => {
       hasBirthChart: !!birthChart 
     });
 
-    const GOOGLE_GEMINI_API_KEY = Deno.env.get("GOOGLE_GEMINI_API_KEY");
+    const GOOGLE_GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
     if (!GOOGLE_GEMINI_API_KEY) {
       throw new Error("GOOGLE_GEMINI_API_KEY is not configured");
     }
